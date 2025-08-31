@@ -29,11 +29,37 @@ export const expenseCategories = [
     { value: "utilities", label: "Utilities" },
     { value: 'income', label: 'Income' }
 ];
-export const todayDate = () => {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-}
 export const INCOME = 'income';
+export const FOOD = 'food';
+export const TRAVEL = 'travel';
+export const UTITLITIES = 'utilities';
+export const RENT = 'rent';
+
+export const periodOptions = [
+    { value: "today", label: "Today" },
+    { value: "week", label: "Week" },
+    { value: "month", label: "Month" },
+    { value: "quarter", label: "Quarter" },
+    { value: 'year', label: 'Year' }
+];
+export const barChartOptions = [
+    { value: "days", label: "Last 5 days" },
+    { value: "months", label: "Last 5 months" },
+    { value: "quarters", label: "Last 5 quarters" },
+    { value: "years", label: "Last 5 years" }
+];
+
+export const TODAY = 'today';
+export const RECENT = 'recent';
+export const WEEK = 'week';
+export const MONTH = 'month';
+export const QUARTER = 'quarter';
+export const YEAR = 'year';
+
+export const categoryArray = [
+    { each: INCOME, color: "hsl(130, 70%, 50%)" },
+    { each: FOOD, color: "hsl(215, 70%, 50%)" },
+    { each: TRAVEL, color: "hsl(35, 70%, 50%)" },
+    { each: RENT, color: "hsl(22, 70%, 50%)" },
+    { each: UTITLITIES, color: "hsl(191, 70%, 50%)" }
+];

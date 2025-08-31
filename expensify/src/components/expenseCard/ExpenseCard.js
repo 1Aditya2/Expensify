@@ -1,14 +1,13 @@
 import { MoveDownLeft, MoveUpRight, Pencil, Trash } from 'lucide-react'
 import React from 'react'
-import { capsFirst } from '../../utils/helper'
+import { capsFirst, USDFormat } from '../../utils/helper'
 import { INCOME } from '../../utils/constant'
 
 const ExpenseCard = ({ name, amount, category, date, index, onEditClick, onDeleteClick }) => {
-    const formatUSD = new Intl.NumberFormat('en-US');
     return (
         <div className='p-2 w-full flex justify-between items-center rounded-xl shadow-lg' key={`${index}-${amount}`}>
             <div className='flex flex-col gap-3'>
-                <p className='text-base flex items-center font-bold'>{capsFirst(name)} · {category === INCOME ? <MoveDownLeft size={16} color='green' /> : <MoveUpRight size={16} color='red' />}${formatUSD.format(amount)}</p>
+                <p className='text-base flex items-center font-bold'>{capsFirst(name)} · {category === INCOME ? <MoveDownLeft size={16} color='green' /> : <MoveUpRight size={16} color='red' />}{USDFormat(amount)}</p>
                 <p className='text-sm'>{capsFirst(category)} · {date}</p>
             </div>
             <div className='flex gap-3 items-center'>

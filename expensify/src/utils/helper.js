@@ -8,3 +8,21 @@ export const delay = ms => new Promise(res => setTimeout(res, ms));
 export function generateId() {
     return Math.floor(Math.random() * 9000) + 1000; // 1000–9999
 }
+export const todayDate = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+export const USDFormat = (amount) => {
+    const formatUSD = new Intl.NumberFormat('en-US');
+    return amount >= 0 ? `$${formatUSD.format(amount)}` : `-$${formatUSD.format(-amount)}`
+}
+export const formatPercentageChange = (input) => {
+    if (input === 'NaN' || input === 'Infinity' || input === '0.0' || input === '-Infinity') {
+        return ''
+    }
+    return input;
+}

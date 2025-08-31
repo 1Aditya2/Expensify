@@ -6,10 +6,10 @@ import { addExpenseValidation } from '../constant';
 import { Input } from '../../../components/input/Input';
 import { Select } from '../../../components/select/Select';
 import { DateSelector } from '../../../components/dateSelector/DateSelector';
-import { expenseCategories, todayDate } from '../../../utils/constant';
+import { expenseCategories } from '../../../utils/constant';
 import { useDispatch } from 'react-redux';
 import { addExpense } from '../../../redux/expenseSlice';
-import { delay } from '../../../utils/helper';
+import { delay, todayDate } from '../../../utils/helper';
 
 const AddExpenseModal = ({ open, onClose }) => {
   const focusRef = React.useRef(null);

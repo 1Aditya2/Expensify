@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import ExpenseCard from '../../components/expenseCard/ExpenseCard'
 import { Select } from '../../components/select/Select'
 import { DateSelector } from '../../components/dateSelector/DateSelector'
@@ -9,9 +9,10 @@ import { Button } from '../../components/Button/Button'
 import { Plus, RotateCcw } from 'lucide-react'
 import AddExpenseModal from './Modals/AddExpenseModal'
 import { useSelector } from 'react-redux'
-import { expenseCategories, todayDate } from '../../utils/constant'
+import { expenseCategories } from '../../utils/constant'
 import { isEmpty } from 'lodash'
 import { initExpenseFilters } from './constant'
+import { todayDate } from '../../utils/helper'
 
 const Expenses = () => {
   const expenses = useSelector(state => state.expenseReducer.expenses);
@@ -36,7 +37,7 @@ const Expenses = () => {
         ({
         name: expenseName = '',
         amount: expenseAmount = '' }) =>
-          expenseName.toLowerCase().includes(filters.search.toLowerCase()) || expenseAmount === filters.search);
+          expenseName.toLowerCase().includes(filters.search.toLowerCase()) || expenseAmount.includes(filters.search));
     }
     return filteredData
   }, [expenses, filters]);
