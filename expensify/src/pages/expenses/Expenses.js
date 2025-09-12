@@ -8,21 +8,23 @@ import EditExpenseModal from './Modals/EditExpenseModal'
 import { Button } from '../../components/Button/Button'
 import { Plus, RotateCcw } from 'lucide-react'
 import AddExpenseModal from './Modals/AddExpenseModal'
-import { useSelector } from 'react-redux'
-import { expenseCategories } from '../../utils/constant'
+import { useDispatch, useSelector } from 'react-redux'
+import { defaultDateFormat, expenseCategories } from '../../utils/constant'
 import { isEmpty } from 'lodash'
 import { initExpenseFilters } from './constant'
-import { todayDate } from '../../utils/helper'
+import { bulkDeleteExpenses } from '../../redux/expenseSlice'
+import moment from 'moment'
+import NoExpenses from './NoExpenses'
 
 const Expenses = () => {
   const expenses = useSelector(state => state.expenseReducer.expenses);
-
+  const dispatch = useDispatch();
   const [filters, setFilters] = useState(initExpenseFilters);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const [currentRowData, setCurrentRowData] = useState({});
-  const max = todayDate();
+  const [checked, setChecked] = useState({});
 
   const filteredExpenses = useMemo(() => {
     let filteredData = expenses || [];
@@ -35,8 +37,8 @@ const Expenses = () => {
     if (!isEmpty(filters.search)) {
       filteredData = filteredData.filter(
         ({
-        name: expenseName = '',
-        amount: expenseAmount = '' }) =>
+          name: expenseName = '',
+          amount: expenseAmount = '' }) =>
           expenseName.toLowerCase().includes(filters.search.toLowerCase()) || expenseAmount.includes(filters.search));
     }
     return filteredData
@@ -46,6 +48,8 @@ const Expenses = () => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   }
+
+  const showBulkDelete = JSON.stringify(checked).indexOf('true') !== -1;
 
   return (
     <div className='h-[93%] ml-6 mt-4 flex flex-col items-start gap-4'>
@@ -63,7 +67,7 @@ const Expenses = () => {
             name='date'
             value={filters.date}
             onChange={handleFilters}
-            max={max}
+            max={moment().format(defaultDateFormat)}
           />
           <Input
             name="search"
@@ -71,6 +75,12 @@ const Expenses = () => {
             onChange={handleFilters}
             placeholder="search by amount or name"
           />
+          {showBulkDelete && <Button onClick={() => {
+            dispatch(bulkDeleteExpenses(checked));
+            setChecked({});
+          }}>
+            Delete selected
+          </Button>}
           <Button className='ml-6' onClick={() => setFilters(initExpenseFilters)}>
             <RotateCcw size={16} />
           </Button>
@@ -81,26 +91,33 @@ const Expenses = () => {
         </Button>
       </div>
       <div className='overflow-auto h-full flex flex-col items-start gap-4 w-full'>
-        {filteredExpenses?.map(({ name, category, amount, date, id }, index) => {
-          return (
-            <ExpenseCard
-              key={`${name}-${index}`}
-              name={name}
-              category={category}
-              amount={amount}
-              date={date}
-              index={index}
-              onEditClick={() => {
-                setCurrentRowData({ name, category, amount, date, id });
-                setEditOpen(true);
-              }}
-              onDeleteClick={() => {
-                setCurrentRowData({ name, category, amount, date, id });
-                setDeleteOpen(true)
-              }}
-            />
-          )
-        })}
+        {
+          !isEmpty(filteredExpenses)
+            ? filteredExpenses?.map(({ name, category, amount, date, id }, index) => {
+              return (
+                <ExpenseCard
+                  key={`${name}-${index}`}
+                  name={name}
+                  category={category}
+                  amount={amount}
+                  date={date}
+                  id={id}
+                  index={index}
+                  checked={checked[id]}
+                  onChecked={(e, id) => setChecked((prev) => ({ ...prev, [id]: e }))}
+                  onEditClick={() => {
+                    setCurrentRowData({ name, category, amount, date, id });
+                    setEditOpen(true);
+                  }}
+                  onDeleteClick={() => {
+                    setCurrentRowData({ name, category, amount, date, id });
+                    setDeleteOpen(true)
+                  }}
+                />
+              )
+            })
+            : <NoExpenses/>
+        }
       </div>
       {deleteOpen &&
         <DeleteExpense open={deleteOpen} onClose={() => setDeleteOpen(false)} data={currentRowData} />

@@ -25,8 +25,16 @@ const expenseSlice = createSlice({
           return expenseId !== exp.id;
         })
         state.expenses = updatedExpenses;
+      },
+      bulkDeleteExpenses(state, action) {
+        const arr = Object.entries(action.payload)
+        .map(([k, v]) => ({ id: Number(k), value: v }))
+        .filter(({ value }) => value)
+        .map(({ id }) => id);
+        const filteredExpenses = state.expenses.filter(({ id }) => !arr.includes(id));
+        state.expenses = filteredExpenses;
       }
     }
   });
-  export const { addExpense, editExpense, deleteExpense } = expenseSlice.actions
+  export const { addExpense, editExpense, deleteExpense, bulkDeleteExpenses } = expenseSlice.actions
   export default expenseSlice.reducer;

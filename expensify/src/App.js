@@ -6,6 +6,7 @@ import Expenses from './pages/expenses/Expenses';
 import { capsFirst } from './utils/helper';
 import Dashboard from './pages/dashboard/Dashboard';
 import Redirect from './pages/Redirect';
+import Budget from './pages/budget/Budget';
 
 function App() {
   const { pathname = '' } = useLocation();
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Redirect/>} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/expenses" element={<Expenses />} />
+        <Route path="/budget" element={<Budget/>} />
       </Routes>
       </div>
     </div>  

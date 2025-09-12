@@ -29,6 +29,13 @@ export const expenseCategories = [
     { value: "utilities", label: "Utilities" },
     { value: 'income', label: 'Income' }
 ];
+export const periodCategories = [
+    { value: "week", label: "Week" },
+    { value: "month", label: "Month" },
+    { value: "quarter", label: "Quarter" },
+    { value: "year", label: "Year" },
+    { value: 'custom', label: 'Custom' }
+];
 export const INCOME = 'income';
 export const FOOD = 'food';
 export const TRAVEL = 'travel';
@@ -55,6 +62,8 @@ export const WEEK = 'week';
 export const MONTH = 'month';
 export const QUARTER = 'quarter';
 export const YEAR = 'year';
+export const CUSTOM = 'custom';
+export const defaultDateFormat = 'YYYY-MM-DD';
 
 export const categoryArray = [
     { each: INCOME, color: "hsl(130, 70%, 50%)" },

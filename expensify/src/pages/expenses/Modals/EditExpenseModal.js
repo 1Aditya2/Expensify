@@ -5,16 +5,17 @@ import { Formik } from 'formik';
 import { Input } from '../../../components/input/Input';
 import { Select } from '../../../components/select/Select';
 import { DateSelector } from '../../../components/dateSelector/DateSelector';
-import { expenseCategories } from '../../../utils/constant';
+import { defaultDateFormat, expenseCategories } from '../../../utils/constant';
 import { addExpenseValidation } from '../constant';
-import { delay, todayDate } from '../../../utils/helper';
+import { delay } from '../../../utils/helper';
 import { useDispatch } from 'react-redux';
 import { editExpense } from '../../../redux/expenseSlice';
+import moment from 'moment';
 
 const EditExpenseModal = ({ open, onClose, data }) => {
   const focusRef = React.useRef(null);
   const dispatch = useDispatch();
-  const max = todayDate();
+  const max = moment().format(defaultDateFormat);
 
   return (
     <Modal

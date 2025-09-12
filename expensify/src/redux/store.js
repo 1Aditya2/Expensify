@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import expenseReducer from "./expenseSlice";
+import budgetReducer from "./budgetSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 const rootReducer = combineReducers({
-  expenseReducer
+  expenseReducer,
+  budgetReducer
 });
 const persistConfig = {
   key: "root",

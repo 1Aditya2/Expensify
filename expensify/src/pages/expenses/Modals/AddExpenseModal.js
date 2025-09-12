@@ -6,15 +6,16 @@ import { addExpenseValidation } from '../constant';
 import { Input } from '../../../components/input/Input';
 import { Select } from '../../../components/select/Select';
 import { DateSelector } from '../../../components/dateSelector/DateSelector';
-import { expenseCategories } from '../../../utils/constant';
+import { defaultDateFormat, expenseCategories } from '../../../utils/constant';
 import { useDispatch } from 'react-redux';
 import { addExpense } from '../../../redux/expenseSlice';
-import { delay, todayDate } from '../../../utils/helper';
+import { delay } from '../../../utils/helper';
+import moment from 'moment';
 
 const AddExpenseModal = ({ open, onClose }) => {
   const focusRef = React.useRef(null);
   const dispatch = useDispatch();
-  const max = todayDate();
+  const max = moment().format(defaultDateFormat);
 
   return (
     <Modal

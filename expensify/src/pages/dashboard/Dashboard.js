@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { Select } from '../../components/select/Select'
 import { INCOME, periodOptions, TODAY } from '../../utils/constant';
-import { formatPercentageChange, todayDate, USDFormat } from '../../utils/helper';
+import { formatPercentageChange, USDFormat } from '../../utils/helper';
 import { useSelector } from 'react-redux';
 import ExpenseCard from '../../components/expenseCard/ExpenseCard';
 import { isEmpty } from 'lodash';
@@ -11,11 +11,10 @@ import { periodBasedCondition } from './helper';
 import BarChart from './BarChart';
 import DeleteExpense from '../expenses/Modals/DeleteExpense';
 import EditExpenseModal from '../expenses/Modals/EditExpenseModal';
-
 const Dashboard = () => {
   const [period, setPeriod] = useState(TODAY);
   const expenses = useSelector(state => state.expenseReducer.expenses);
-  const recentExpenses = expenses.filter(({ date: expenseDate }) => expenseDate === todayDate());
+  const recentExpenses = expenses.slice(0,5);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [currentRowData, setCurrentRowData] = useState({});
@@ -62,7 +61,7 @@ const Dashboard = () => {
   }, [expenses, period]);
 
   return (
-    <div className='h-[93%] overflow-auto ml-6 mt-4 flex flex-col items-start gap-6'>
+    <div className='h-[93%] overflow-auto ml-6 mt-4 flex flex-col items-start gap-4'>
       <Select
         name={'period'}
         value={period}
@@ -95,8 +94,9 @@ const Dashboard = () => {
            <BarChart/>
         </div>
       </div>
+      <div className='flex overflow-hidden flex-col items-start gap-2 w-full'>
       <p className='text-lg'>Recent Transactions</p>
-      <div className='overflow-auto flex flex-col items-start gap-2 w-full'>
+        <div className='overflow-auto h-full flex flex-col items-start gap-2 w-full'>
         {recentExpenses?.map(({ name, category, amount, date, id }, index) => {
           return (
             <ExpenseCard
@@ -117,6 +117,7 @@ const Dashboard = () => {
             />
           )
         })}
+        </div>
       </div>
       {deleteOpen &&
         <DeleteExpense open={deleteOpen} onClose={() => setDeleteOpen(false)} data={currentRowData} />
