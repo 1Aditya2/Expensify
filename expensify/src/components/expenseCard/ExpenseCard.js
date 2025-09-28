@@ -14,7 +14,8 @@ const ExpenseCard = ({ name, amount, category, date, index, onEditClick, onDelet
                         checked={checked}
                         onChange={(e) => onChecked(e.target.checked, id)}
                     />}
-                    <p className='text-base flex items-center font-bold'>{capsFirst(name)} · {category === INCOME
+                    <p className='text-base flex items-center font-bold'>{
+                        <span className='max-w-[10ch] text-ellipsis overflow-hidden whitespace-nowrap'>{capsFirst(name)}</span>}&nbsp;·&nbsp;{category === INCOME
                         ? <MoveDownLeft size={16} color='green' />
                         : <MoveUpRight size={16} color='red' />}
                         {USDFormat(amount)}

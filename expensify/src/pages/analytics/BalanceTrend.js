@@ -1,0 +1,112 @@
+import { ResponsiveLine } from '@nivo/line';
+import React, { useMemo, useState } from 'react';
+import { capsFirst, getDaysArray, getStartandEndDateBasedOnPeriod, USDFormat } from '../../utils/helper';
+import { Select } from '../../components/select/Select';
+import { INCOME, periodOptions, WEEK } from '../../utils/constant';
+import { useSelector } from 'react-redux';
+import moment from 'moment';
+import { getTickValues } from './helper';
+const BalanceTrend = () => {
+    const [period, setPeriod] = useState(WEEK);
+    const { expenses, initialBalance } = useSelector((state) => state.expenseReducer);
+
+    const { data, axisBottom, balance, min, max } = useMemo(() => {
+        const { periodStartDate, periodEndDate } = getStartandEndDateBasedOnPeriod(period)
+        const datesArray = getDaysArray(periodStartDate, periodEndDate);
+        const sortedExpenses = expenses.toSorted((a, b) => moment(a.date).diff(moment(b.date)));
+        let balanceTrend = [];
+        for (const each of datesArray) {
+            let balanceTillDate = initialBalance;
+            for (const expense of sortedExpenses) {
+                const { date: expenseDate, amount, category } = expense;
+                if (moment(expenseDate).isAfter(moment(each))) {
+                    break;
+                }
+                if (category === INCOME) {
+                    balanceTillDate = balanceTillDate + Number(amount);
+                    continue;
+                }
+                balanceTillDate = balanceTillDate - Number(amount);
+            }
+            balanceTrend.push({
+                x: each,
+                y: balanceTillDate
+            });
+        };
+        const sortedBalances = balanceTrend.toSorted((a, b) => a.y - b.y);
+        const tickValues = getTickValues(period, datesArray.length);
+        return {
+            data: [{
+                data: balanceTrend,
+                id: 'positive'
+            }],
+            axisBottom: {
+                format: '%b %d',
+                legend: 'Duration',
+                legendOffset: 30,
+                tickValues
+            },
+            balance: balanceTrend[balanceTrend.length - 1].y,
+            min: sortedBalances[0].y,
+            max: sortedBalances[sortedBalances.length - 1].y
+        };
+    }, [period, expenses, initialBalance]);
+
+    return (
+        <div className='shadow-xl max-w-[50%] flex-1 rounded-3xl p-4 flex flex-col gap-1 items-start'>
+            <div className='flex items-center justify-between w-full'>
+                <h1 className='text-xl'>{capsFirst('Balance Trend')}</h1>
+                <Select
+                    name={'period'}
+                    value={period}
+                    placeholder={'Select a period'}
+                    options={periodOptions.slice(1)}
+                    onChange={(e) => setPeriod(e.target.value)}
+                />
+            </div>
+            <p className='text-lg'>{USDFormat(balance)}</p>
+            <div className='w-full h-64'>
+                <ResponsiveLine
+                    animate
+                    areaOpacity={0.2}
+                    colors={[
+                        'rgb(244, 117, 96)'
+                    ]}
+                    axisBottom={axisBottom}
+                    axisLeft={{
+                        legend: 'Amount',
+                        legendOffset: 12
+                    }}
+                    crosshairType="cross"
+                    curve="monotoneX"
+                    data={data}
+                    enableArea
+                    enableTouchCrosshair
+                    margin={{
+                        bottom: 50,
+                        left: 45,
+                        right: 20,
+                        top: 20
+                    }}
+                    pointSize={5}
+                    useMesh
+                    xFormat="time:%Y-%m-%d"
+                    xScale={{
+                        format: '%Y-%m-%d',
+                        precision: 'day',
+                        type: 'time',
+                        useUTC: false
+                    }}
+                    yScale={{
+                        min: min,
+                        max: max,
+                        stacked: false,
+                        type: 'linear'
+                    }}
+                />
+            </div>
+        </div>
+    );
+};
+
+export default BalanceTrend;

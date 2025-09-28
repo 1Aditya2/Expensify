@@ -39,53 +39,55 @@ const Expenses = () => {
         ({
           name: expenseName = '',
           amount: expenseAmount = '' }) =>
-          expenseName.toLowerCase().includes(filters.search.toLowerCase()) || expenseAmount.includes(filters.search));
+          expenseName.toLowerCase().includes(filters.search.toLowerCase()) || expenseAmount.includes(filters.search))
     }
-    return filteredData
+    return filteredData;
   }, [expenses, filters]);
 
   const handleFilters = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   }
-
   const showBulkDelete = JSON.stringify(checked).indexOf('true') !== -1;
 
   return (
     <div className='h-[93%] ml-6 mt-4 flex flex-col items-start gap-4'>
-      <div className='flex justify-between items-center w-full'>
-        <div className='flex gap-4 items-center'>
+      <div className='flex justify-between items-center w-full flex-wrap gap-2'>
+        <div className='flex gap-4 items-center flex-wrap'>
           <Select
             name={'category'}
             placeholder="Select category"
             value={filters.category}
             onChange={handleFilters}
             options={expenseCategories}
+            className='max-md:w-full'
           />
           <DateSelector
             placeholder="YYYY-MM-DD"
             name='date'
             value={filters.date}
             onChange={handleFilters}
+            className='max-md:w-full'
             max={moment().format(defaultDateFormat)}
           />
           <Input
             name="search"
             value={filters.search}
             onChange={handleFilters}
+            className='max-md:w-full'
             placeholder="search by amount or name"
           />
-          {showBulkDelete && <Button onClick={() => {
+          {showBulkDelete && <Button className='max-md:w-full' onClick={() => {
             dispatch(bulkDeleteExpenses(checked));
             setChecked({});
           }}>
             Delete selected
           </Button>}
-          <Button className='ml-6' onClick={() => setFilters(initExpenseFilters)}>
+          <Button className='max-md:w-full max-md:justify-center max-md:flex' onClick={() => setFilters(initExpenseFilters)}>
             <RotateCcw size={16} />
           </Button>
         </div>
-        <Button primary onClick={() => setAddOpen(true)}>
+        <Button className='max-md:w-full max-md:justify-center max-md:flex' primary onClick={() => setAddOpen(true)}>
           <Plus size={16} />
           <p className='text-base'>Add Expense</p>
         </Button>

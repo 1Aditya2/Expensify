@@ -3,10 +3,12 @@ import React, { useMemo } from 'react'
 import moment from 'moment';
 import { getDaysArray, USDFormat } from '../../utils/helper';
 import { useSelector } from 'react-redux';
-import { CUSTOM, MONTH, QUARTER, WEEK, YEAR } from '../../utils/constant';
+import { getTickValues } from '../analytics/helper';
 
 const LineChart = ({ lineData }) => {
     const expenses = useSelector(state => state.expenseReducer.expenses);
+    const { endDate } = lineData || {};
+    const periodEnded = endDate === moment().format('YYYY-MM-DD');
 
     const { axisBottom, lineChartData, avg, recommended } = useMemo(() => {
         const { amount, startDate, endDate, category, period } = lineData;
@@ -50,16 +52,7 @@ const LineChart = ({ lineData }) => {
                     y: Number(amount)
                 })
             }
-            let tickValues = '';
-            if (period === CUSTOM || period === WEEK) {
-                tickValues = `every ${Math.round((datesArray.length) / 5)} days`;
-            } else if (period === MONTH) {
-                tickValues = `every 1 week`;
-            } else if (period === YEAR) {
-                tickValues = `every 1 month`;
-            } else if (period === QUARTER) {
-                tickValues = `every 2 week`;
-            }
+            const tickValues = getTickValues(period, datesArray.length);
             return {
                 axisBottom: {
                     format: '%b %d',
@@ -99,13 +92,16 @@ const LineChart = ({ lineData }) => {
                         legend: 'Amount',
                         legendOffset: 12
                     }}
+                    colors={[
+                        'rgb(97, 205, 187)',
+                        'rgb(244, 117, 96)',
+                        'rgb(210, 40, 100)',
+                        'rgb(10, 100, 260)'
+                    ]}
                     curve="linear"
                     data={lineChartData}
                     enableSlices="x"
                     enableTouchCrosshair
-                    initialHiddenIds={[
-                        'cognac'
-                    ]}
                     legends={[
                         {
                             anchor: 'right',
@@ -116,7 +112,7 @@ const LineChart = ({ lineData }) => {
                             symbolShape: 'square'
                         }
                     ]}
-                    pointSize={8}
+                    pointSize={5}
                     margin={{
                         top: 20,
                         left: 36,
@@ -140,10 +136,10 @@ const LineChart = ({ lineData }) => {
                     <p>{USDFormat(avg)}</p>
                     <p>Daily average</p>
                 </div>
-                <div className='flex text-base items-end flex-col'>
+                {!periodEnded && <div className='flex text-base items-end flex-col'>
                     <p>{USDFormat(recommended)}</p>
                     <p>Daily recommended</p>
-                </div>
+                </div>}
             </div>
         </div>
     )

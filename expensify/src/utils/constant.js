@@ -2,7 +2,7 @@ import { BanknoteArrowDown, ChartNoAxesCombined, HandCoins, LayoutDashboard } fr
 export const navItems = [
     {
         label: 'Dashboard',
-        to: '/dashboard',
+        to: '/',
         icon: <LayoutDashboard />
     },
     {
@@ -37,10 +37,12 @@ export const periodCategories = [
     { value: 'custom', label: 'Custom' }
 ];
 export const INCOME = 'income';
+export const EXPENSES = 'expenses';
 export const FOOD = 'food';
 export const TRAVEL = 'travel';
 export const UTITLITIES = 'utilities';
 export const RENT = 'rent';
+export const CASH_FLOW = 'cashFlow';
 
 export const periodOptions = [
     { value: "today", label: "Today" },

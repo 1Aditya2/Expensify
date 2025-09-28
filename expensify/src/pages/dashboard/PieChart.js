@@ -5,6 +5,7 @@ import { capsFirst } from '../../utils/helper';
 import { useSelector } from 'react-redux';
 import { Select } from '../../components/select/Select';
 import { chartPeriodCondition } from './helper';
+import NothingToShow from '../../components/NothingToShowInPeriod/NothingToShow';
 
 const PieChart = () => {
     const expenses = useSelector(state => state.expenseReducer.expenses);
@@ -61,10 +62,7 @@ const PieChart = () => {
                         symbolShape: 'square'
                     }
                 ]}
-            /> : 
-            <div className='flex items-center justify-center h-full'>
-            <p className='text-center text-slate-500'>Nothing to show in this period</p>
-            </div>
+            /> : <NothingToShow/>
             }
         </div>
     )

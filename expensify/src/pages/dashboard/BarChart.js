@@ -4,6 +4,7 @@ import { Select } from '../../components/select/Select'
 import { barChartOptions, FOOD, RENT, TRAVEL, UTITLITIES } from '../../utils/constant'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
+import NothingToShow from '../../components/NothingToShowInPeriod/NothingToShow'
 
 const BarChart = () => {
     const expenses = useSelector(state => state.expenseReducer.expenses);
@@ -27,7 +28,6 @@ const BarChart = () => {
     }, [period, expenses]);
 
     const noData = barData.every(({ value }) => value === 0);
-    console.log({ barData, noData })
 
     return (
         <div className='w-full h-full'>
@@ -52,9 +52,7 @@ const BarChart = () => {
                 axisLeft={{ legend: 'Amount', legendOffset: -50 }}
                 margin={{ top: 20, right: 120, bottom: 75, left: 60 }}
             /> :
-                <div className='flex items-center justify-center h-full'>
-                    <p className='text-center text-slate-500'>Nothing to show in this period</p>
-                </div>
+            <NothingToShow/>
             }
         </div>
     )

@@ -1,5 +1,5 @@
 import moment from "moment";
-import { defaultDateFormat, MONTH, QUARTER, WEEK, YEAR } from "./constant";
+import { defaultDateFormat, TODAY } from "./constant";
 
 export const capsFirst = (string = '') => {
     if (string) {
@@ -29,7 +29,7 @@ export const getDaysArray = (startDate, endDate) => {
 
     let current = start.clone();
     while (current.isSameOrBefore(end, "day")) {
-        days.push(current.format("YYYY-MM-DD")); // push in your desired format
+        days.push(current.format("YYYY-MM-DD"));
         current.add(1, "day");
     }
 
@@ -38,18 +38,9 @@ export const getDaysArray = (startDate, endDate) => {
 export const getStartandEndDateBasedOnPeriod = (period) => {
     let periodStartDate;
     let periodEndDate;
-    if (period === WEEK) {
-        periodStartDate = moment().startOf('week').format(defaultDateFormat);
-        periodEndDate = moment().endOf('week').format(defaultDateFormat)
-    } else if (period === MONTH) {
-        periodStartDate = moment().startOf('month').format(defaultDateFormat);
-        periodEndDate = moment().endOf('month').format(defaultDateFormat)
-    } else if (period === YEAR) {
-        periodStartDate = moment().startOf('year').format(defaultDateFormat);
-        periodEndDate = moment().endOf('year').format(defaultDateFormat)
-    } else if (period === QUARTER) {
-        periodStartDate = moment().startOf('quarter').format(defaultDateFormat);
-        periodEndDate = moment().endOf('quarter').format(defaultDateFormat)
+    if (period !== TODAY) {
+        periodStartDate = moment().startOf(period).format(defaultDateFormat);
+        periodEndDate = moment().endOf(period).format(defaultDateFormat)
     }
     return {
         periodStartDate,

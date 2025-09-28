@@ -39,3 +39,14 @@ export const chartPeriodCondition = (period, expenseDate) => {
         return moment(expenseDate).isSameOrAfter(startOfYear) && moment(expenseDate).isSameOrBefore(endOfYear)
       }
 };
+export const addBalanceValidation = (values) => {
+  const errors = {};
+  const intBalance = Number(values.balance)
+  if (!intBalance) {
+    errors.balance = 'Initial balance should be a number!';
+  }
+  if (intBalance < 0 || intBalance === 0) {
+    errors.balance = 'Initial balance should never be negative or zero!';
+  }
+  return errors;
+};

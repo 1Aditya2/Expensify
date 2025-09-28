@@ -2,7 +2,6 @@ import React from 'react'
 import { capsFirst, USDFormat } from '../../utils/helper'
 import { Edit, Trash2 } from 'lucide-react'
 import { LinearProgress } from '../ProgressBar/ProgressBar'
-import { CUSTOM } from '../../utils/constant'
 import moment from 'moment'
 
 const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, onEditBudget, spent, progress, remains, percent }) => {
@@ -15,9 +14,8 @@ const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, 
                     {onDeleteBudget && <Trash2 className='cursor-pointer' size={18} onClick={onDeleteBudget} />}
                 </div>
             </div>
-            <p className='text-slate-600 text-sm'>{period !== CUSTOM
-                ? period.toUpperCase()
-                : `${moment(startDate).format('D MMM YYYY')} - ${moment(endDate).format('D MMM YYYY')}`}
+            <p className='text-slate-600 text-sm'>
+            {moment(startDate).format('D MMM YYYY')} - {moment(endDate).format('D MMM YYYY')}
             </p>
             <div className='flex text-base justify-between items-center'>
                 <p>{USDFormat(amount)}</p>

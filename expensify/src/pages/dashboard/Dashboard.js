@@ -1,42 +1,51 @@
 import React, { useMemo, useState } from 'react'
 import { Select } from '../../components/select/Select'
 import { INCOME, periodOptions, TODAY } from '../../utils/constant';
-import { formatPercentageChange, USDFormat } from '../../utils/helper';
-import { useSelector } from 'react-redux';
+import { capsFirst, formatPercentageChange, USDFormat } from '../../utils/helper';
+import { useDispatch, useSelector } from 'react-redux';
 import ExpenseCard from '../../components/expenseCard/ExpenseCard';
 import { isEmpty } from 'lodash';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { Edit, TrendingDown, TrendingUp } from 'lucide-react';
 import PieChart from './PieChart';
 import { periodBasedCondition } from './helper';
 import BarChart from './BarChart';
 import DeleteExpense from '../expenses/Modals/DeleteExpense';
 import EditExpenseModal from '../expenses/Modals/EditExpenseModal';
+import NoExpenses from '../expenses/NoExpenses';
+import InitBalanceModal from './InitBalanceModal';
+import { setInitBalanceFlag } from '../../redux/expenseSlice';
 const Dashboard = () => {
   const [period, setPeriod] = useState(TODAY);
-  const expenses = useSelector(state => state.expenseReducer.expenses);
-  const recentExpenses = expenses.slice(0,5);
+  const { expenses, initialBalance, initBalanceFlag = true } = useSelector(state => state.expenseReducer);
+  const dispatch = useDispatch();
+
+  const recentExpenses = expenses.slice(0, 4)?.sort((a, b) => new Date(b.date) - new Date(a.date)) || [];
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [openInitBalance, setOpenInitBalance] = useState(initBalanceFlag);
   const [currentRowData, setCurrentRowData] = useState({});
 
   const metrics = useMemo(() => {
     const income = expenses.filter(({ category }) => category === INCOME).reduce((acc, row) => Number(row.amount) + acc, 0);
     const outcome = expenses.filter(({ category }) => category !== INCOME).reduce((acc, row) => Number(row.amount) + acc, 0);
-    const currBalance = 100 + (income - outcome);
+    const currBalance = initialBalance + (income - outcome);
     const currSavings = income - outcome;
-    let balancePercent = '';
-    let incomePercent = '';
-    let outcomePercent = '';
-    let savingsPercent = '';
-    const prevPeriodIncome = expenses.filter(({ category, date }) => category === INCOME && periodBasedCondition(period, date)).reduce((acc, row) => Number(row.amount) + acc, 0);
-    const prevPeriodOutcome = expenses.filter(({ category, date }) => category !== INCOME && periodBasedCondition(period, date)).reduce((acc, row) => Number(row.amount) + acc, 0);
-    const oldBalance = 100 + prevPeriodIncome - prevPeriodOutcome;
+    const prevPeriodIncome = expenses.filter(({ category, date }) => category === INCOME
+      && periodBasedCondition(period, date)).reduce((acc, row) => Number(row.amount) + acc, 0);
+    const prevPeriodOutcome = expenses.filter(({ category, date }) => category !== INCOME
+      && periodBasedCondition(period, date)).reduce((acc, row) => Number(row.amount) + acc, 0);
+    const oldBalance = initialBalance + prevPeriodIncome - prevPeriodOutcome;
     const oldSaving = prevPeriodIncome - prevPeriodOutcome;
-    incomePercent = formatPercentageChange((((income - prevPeriodIncome) / prevPeriodIncome) * 100).toFixed(1));
-    outcomePercent = formatPercentageChange((((outcome - prevPeriodOutcome) / prevPeriodOutcome) * 100).toFixed(1));
-    balancePercent = formatPercentageChange((((currBalance - oldBalance) / oldBalance) * 100).toFixed(1));
-    savingsPercent = formatPercentageChange((((currSavings - oldSaving) / oldSaving) * 100).toFixed(1));
+    let incomePercent = formatPercentageChange((((income - prevPeriodIncome) / Math.abs(prevPeriodIncome)) * 100).toFixed(1));
+    let outcomePercent = formatPercentageChange((((outcome - prevPeriodOutcome) / Math.abs(prevPeriodOutcome)) * 100).toFixed(1));
+    let balancePercent = formatPercentageChange((((currBalance - oldBalance) / Math.abs(oldBalance)) * 100).toFixed(1));
+    let savingsPercent = formatPercentageChange((((currSavings - oldSaving) / Math.abs(oldSaving)) * 100).toFixed(1));
     return [
+      {
+        label: 'Initial balance',
+        value: initialBalance,
+        icon: <Edit size={16} className='cursor-pointer' />
+      },
       {
         label: 'Net Balance',
         value: currBalance,
@@ -58,10 +67,10 @@ const Dashboard = () => {
         perChange: savingsPercent
       }
     ];
-  }, [expenses, period]);
+  }, [expenses, period, initialBalance]);
 
   return (
-    <div className='h-[93%] overflow-auto ml-6 mt-4 flex flex-col items-start gap-4'>
+    <div className='h-full overflow-auto ml-6 mt-4 flex flex-col items-start gap-4'>
       <Select
         name={'period'}
         value={period}
@@ -69,11 +78,14 @@ const Dashboard = () => {
         options={periodOptions}
         onChange={(e) => setPeriod(e.target.value)}
       />
-      <div className='flex items-center justify-between w-full'>
-        {metrics?.map(({ label, value, perChange = 0 }, index) => {
+      <div className='flex items-center justify-between w-full flex-wrap gap-3 max-md:justify-center'>
+        {metrics?.map(({ label, value, perChange = 0, icon }, index) => {
           return (
-            <div key={`${value}-${index}`} className='flex flex-col items-start gap-2 shadow-lg px-6 py-2 rounded-xl'>
-              <p className='text-lg'>{label}</p>
+            <div key={`${value}-${index}`} className='flex flex-col items-start gap-2 shadow-lg px-6 py-2 rounded-xl max-md:w-full'>
+              <div className='flex items-center gap-2'>
+                <p className='text-lg'>{capsFirst(label)}</p>
+                {icon && <div onClick={() => setOpenInitBalance(true)}>{icon}</div>}
+              </div>
               <div className='flex flex-col gap-1'>
                 <p className='font-bold text-xl'>{USDFormat(value)}</p>
                 <p className='text-xs flex items-center gap-1 text-slate-500'>{!isEmpty(perChange)
@@ -86,37 +98,37 @@ const Dashboard = () => {
           );
         })}
       </div>
-      <div className='flex items-center justify-between w-full'>
-        <div className='w-[49%] h-80 rounded-xl px-6 py-3 shadow-lg'>
-           <PieChart/>
+      <div className='flex items-center justify-between w-full max-lg:flex-col'>
+        <div className='w-[49%] h-80 rounded-xl px-6 py-3 shadow-lg max-lg:w-full'>
+          <PieChart />
         </div>
-        <div className='w-[49%] h-80 rounded-xl px-6 py-3 shadow-lg'>
-           <BarChart/>
+        <div className='w-[49%] h-80 rounded-xl px-6 py-3 shadow-lg max-lg:w-full'>
+          <BarChart />
         </div>
       </div>
       <div className='flex overflow-hidden flex-col items-start gap-2 w-full'>
-      <p className='text-lg'>Recent Transactions</p>
-        <div className='overflow-auto h-full flex flex-col items-start gap-2 w-full'>
-        {recentExpenses?.map(({ name, category, amount, date, id }, index) => {
-          return (
-            <ExpenseCard
-              key={`${name}-${index}`}
-              name={name}
-              category={category}
-              amount={amount}
-              date={date}
-              index={index}
-              onEditClick={() => {
-              setCurrentRowData({ name, category, amount, date, id });
-              setEditOpen(true);
-            }}
-            onDeleteClick={() => {
-              setCurrentRowData({ name, category, amount, date, id });
-              setDeleteOpen(true)
-            }}
-            />
-          )
-        })}
+        <p className='text-lg'>Recent Transactions</p>
+        <div className='overflow-auto h-[20vh] flex flex-col items-start gap-2 w-full'>
+          {!isEmpty(recentExpenses) ? recentExpenses?.map(({ name, category, amount, date, id }, index) => {
+            return (
+              <ExpenseCard
+                key={`${name}-${index}`}
+                name={name}
+                category={category}
+                amount={amount}
+                date={date}
+                index={index}
+                onEditClick={() => {
+                  setCurrentRowData({ name, category, amount, date, id });
+                  setEditOpen(true);
+                }}
+                onDeleteClick={() => {
+                  setCurrentRowData({ name, category, amount, date, id });
+                  setDeleteOpen(true)
+                }}
+              />
+            )
+          }) : <NoExpenses />}
         </div>
       </div>
       {deleteOpen &&
@@ -124,6 +136,14 @@ const Dashboard = () => {
       }
       {
         editOpen && <EditExpenseModal data={currentRowData} open={editOpen} onClose={() => setEditOpen(false)} />
+      }
+      {
+        openInitBalance && <InitBalanceModal open={openInitBalance} onClose={() => {
+          setOpenInitBalance(false);
+          if (initBalanceFlag) {
+            dispatch(setInitBalanceFlag(false));
+          }
+        }} />
       }
     </div>
   )
