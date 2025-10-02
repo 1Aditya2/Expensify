@@ -11,7 +11,7 @@ export function Modal({
   initialFocusRef,
   className = "fixed inset-0 z-50 flex items-center justify-center",
   panelClassName = "",
-  backdropClassName = "fixed inset-0 bg-black/50 z-[-9]",
+  backdropClassName = "fixed inset-0 dark:bg-white/5 bg-black/50 z-[-9]",
   size = 'md'
 }) {
   const width = size === 'md' ? 'w-[500px]' : size === 'lg' ? 'w-[800px]' : 'w-[300px]';
@@ -81,21 +81,21 @@ export function Modal({
       onClick={handleBackdrop}
     >
       <div className={backdropClassName} />
-      <div ref={panelRef} className={`bg-white rounded shadow-lg p-4 ${panelClassName} ${width}`} onClick={stop}>
+      <div ref={panelRef} className={`bg-white rounded shadow-lg dark:bg-slate-800 p-4 ${panelClassName} ${width}`} onClick={stop}>
         <div className="flex items-center justify-between gap-4">
           {title ? (
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <h2 className="text-lg font-semibold dark:text-white">{title}</h2>
           ) : <span className="sr-only">Modal Dialog</span>}
           <button
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className="flex items-center justify-center rounded-[50%] p-1 hover:bg-slate-300"
+            className="flex items-center justify-center rounded-[50%] p-1 hover:bg-slate-300 dark:bg-white"
           >
             <X className="text-lg"/>
           </button>
         </div>
-        <div className="mt-3">{children}</div>
+        <div className="mt-3 dark:text-white">{children}</div>
       </div>
     </div>,
     portalRoot

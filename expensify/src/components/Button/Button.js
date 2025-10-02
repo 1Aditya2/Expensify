@@ -8,8 +8,8 @@ export function Button({ primary = false, children, onClick, type = "button", di
       onClick={onClick}
       disabled={disabled || loading}
       className={
-        `px-4 py-2 flex items-center gap-2 rounded-lg
-        ${primary ? 'bg-black text-white' : 'border border-black text-black'}
+        `px-4 py-2 flex items-center gap-2 rounded-lg dark:text-white
+        ${primary ? 'bg-black text-white dark:bg-white dark:text-black' : 'border border-black text-black dark:border-white'}
         ${(disabled || loading) ? 'opacity-50 cursor-none': ''}
         ${className}`
       }

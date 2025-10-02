@@ -70,7 +70,7 @@ export function Select({
           onChange={onChange}
           disabled={disabled}
           required={required}
-          className={`border border-black p-1 rounded-xl focus:outline-none focus:border-black focus:ring-0 ${selectClassName}`}
+          className={`border border-black p-1 rounded-xl focus:outline-none focus:border-black focus:ring-0 dark:text-black ${selectClassName}`}
         >
           {placeholder && (
             <option value="" disabled className="text-slate-400">

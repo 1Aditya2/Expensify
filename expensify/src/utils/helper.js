@@ -1,5 +1,5 @@
 import moment from "moment";
-import { defaultDateFormat, TODAY } from "./constant";
+import { CUSTOM, defaultDateFormat, TODAY } from "./constant";
 
 export const capsFirst = (string = '') => {
     if (string) {
@@ -38,6 +38,12 @@ export const getDaysArray = (startDate, endDate) => {
 export const getStartandEndDateBasedOnPeriod = (period) => {
     let periodStartDate;
     let periodEndDate;
+    if (period === CUSTOM) {
+        return {
+            periodStartDate,
+            periodEndDate
+        };
+    }
     if (period !== TODAY) {
         periodStartDate = moment().startOf(period).format(defaultDateFormat);
         periodEndDate = moment().endOf(period).format(defaultDateFormat)

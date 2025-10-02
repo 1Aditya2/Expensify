@@ -13,10 +13,12 @@ const NotFound = React.lazy(() => import('./pages/NotFound'));
 function App() {
   const { pathname = '' } = useLocation();
   return (
-    <div className='h-[100vh] p-6 relative'>
+    <div className='h-[100vh] p-4 relative bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'>
       <Sidebar navItems={navItems}/> 
-      <div className='rounded-3xl p-4 z-0 top-6 right-6 bottom-6 absolute left-12 shadow-2xl overflow-hidden'>
-        <p className='text-xl bg-slate-300 inline p-2 rounded-lg'>{(capsFirst(pathname.slice(1) || 'Dashboard'))}</p>
+      <div className='rounded-3xl p-4 z-0 top-3 right-3 bottom-3 absolute left-12 shadow-2xl overflow-hidden bg-white dark:bg-slate-900'>
+        <p className='text-xl bg-slate-300 dark:bg-slate-700 inline p-2 rounded-lg'>
+          {(capsFirst(pathname.slice(1) || 'Dashboard'))}
+        </p>
       <Routes>
         <Route path="/" element={<Dashboard/>} />
         <Route path="/dashboard" element={<Dashboard />} />

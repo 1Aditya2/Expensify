@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { capsFirst, getDaysArray, getStartandEndDateBasedOnPeriod, USDFormat } from '../../utils/helper';
 import { Select } from '../../components/select/Select';
 import { INCOME, periodOptions, WEEK } from '../../utils/constant';
@@ -8,7 +8,14 @@ import moment from 'moment';
 import { getTickValues } from './helper';
 const BalanceTrend = () => {
     const [period, setPeriod] = useState(WEEK);
-    const { expenses, initialBalance } = useSelector((state) => state.expenseReducer);
+    const { expenses, initialBalance, darkMode } = useSelector((state) => state.expenseReducer);
+    const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const { data, axisBottom, balance, min, max } = useMemo(() => {
         const { periodStartDate, periodEndDate } = getStartandEndDateBasedOnPeriod(period)
@@ -53,7 +60,7 @@ const BalanceTrend = () => {
     }, [period, expenses, initialBalance]);
 
     return (
-        <div className='shadow-xl max-w-[50%] flex-1 rounded-3xl p-4 flex flex-col gap-1 items-start'>
+        <div className='shadow-lg dark:shadow-2xl flex-1 rounded-3xl p-3 flex flex-col gap-1 items-start'>
             <div className='flex items-center justify-between w-full'>
                 <h1 className='text-xl'>{capsFirst('Balance Trend')}</h1>
                 <Select
@@ -80,7 +87,39 @@ const BalanceTrend = () => {
                     crosshairType="cross"
                     curve="monotoneX"
                     data={data}
-                    enableArea
+                    theme={{
+                        text: {
+                            color: darkMode ? '#e5e7eb' : '#374151'
+                        },
+                        axis: {
+                            ticks: {
+                                text: {
+                                    fill: darkMode ? '#e5e7eb' : '#374151',
+                                    fontSize: isMobile ? 10 : 12
+                                }
+                            },
+                            legend: {
+                                text: {
+                                    fill: darkMode ? '#e5e7eb' : '#374151',
+                                    fontSize: isMobile ? 10 : 12
+                                }
+                            }
+                        },
+                        legends: {
+                            text: {
+                                fill: darkMode ? '#e5e7eb' : '#374151',
+                                fontSize: isMobile ? 10 : 12
+                            }
+                        },
+                        tooltip: {
+                            container: {
+                                background: darkMode ? '#111827' : '#ffffff',
+                                color: darkMode ? '#e5e7eb' : '#111827',
+                                borderRadius: 6,
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                            }
+                        }
+                    }}
                     enableTouchCrosshair
                     margin={{
                         bottom: 50,

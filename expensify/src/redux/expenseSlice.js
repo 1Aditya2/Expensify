@@ -6,7 +6,8 @@ const expenseSlice = createSlice({
     initialState: {
       expenses: [],
       initialBalance: '',
-      initBalanceFlag: true
+      initBalanceFlag: true,
+      darkMode: false
     },
     reducers: {
       addExpense(state, action) {
@@ -41,8 +42,15 @@ const expenseSlice = createSlice({
       },
       setInitBalanceFlag(state, action) {
         state.initBalanceFlag = action.payload;
+      },
+      setDarkMode(state, action) {
+        state.darkMode = action.payload
       }
     }
   });
-  export const { addExpense, editExpense, deleteExpense, bulkDeleteExpenses, addInitialBalance, setInitBalanceFlag } = expenseSlice.actions
+  export const {
+    addExpense, editExpense, deleteExpense,
+    bulkDeleteExpenses, addInitialBalance,
+    setInitBalanceFlag, setDarkMode
+  } = expenseSlice.actions
   export default expenseSlice.reducer;

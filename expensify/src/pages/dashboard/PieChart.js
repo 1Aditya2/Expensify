@@ -1,5 +1,5 @@
 import { ResponsivePie } from '@nivo/pie'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { categoryArray, periodOptions, TODAY } from '../../utils/constant';
 import { capsFirst } from '../../utils/helper';
 import { useSelector } from 'react-redux';
@@ -8,8 +8,16 @@ import { chartPeriodCondition } from './helper';
 import NothingToShow from '../../components/NothingToShowInPeriod/NothingToShow';
 
 const PieChart = () => {
-    const expenses = useSelector(state => state.expenseReducer.expenses);
+    const { expenses, darkMode } = useSelector(state => state.expenseReducer);
     const [period, setPeriod] = useState(TODAY);
+    const [isSmallScreen, setIsSmallScreen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
+
+    useEffect(() => {
+        const updateScreen = () => setIsSmallScreen(window.innerWidth < 640);
+        updateScreen();
+        window.addEventListener('resize', updateScreen);
+        return () => window.removeEventListener('resize', updateScreen);
+    }, []);
 
     const pieData = useMemo(() => {
         return categoryArray.map(({ each, color }) => {
@@ -28,7 +36,7 @@ const PieChart = () => {
 
     return (
         <div className='w-full h-full'>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between flex-wrap gap-2'>
                 <p className='text-lg'>Top Category</p>
                 <Select
                     name={'period'}
@@ -38,31 +46,39 @@ const PieChart = () => {
                     onChange={(e) => setPeriod(e.target.value)}
                 />
             </div>
-            {!noData ? <ResponsivePie
-                data={pieData}
-                margin={{ top: 20, bottom: 60, right: 100 }}
-                innerRadius={0}
-                padAngle={0.2}
-                cornerRadius={4}
-                activeOuterRadiusOffset={8}
-                arcLinkLabelsSkipAngle={4}
-                arcLinkLabelsTextColor="#333333"
-                arcLinkLabelsThickness={4}
-                arcLinkLabelsColor={{ from: 'color' }}
-                arcLabelsSkipAngle={10}
-                arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
-                legends={[
-                    {
-                        anchor: 'right',
-                        direction: 'column',
-                        translateX: 0,
-                        translateY: 0,
-                        itemWidth: 10,
-                        itemHeight: 45,
-                        symbolShape: 'square'
-                    }
-                ]}
-            /> : <NothingToShow/>
+            {!noData ? <>
+                <ResponsivePie
+                    data={pieData}
+                    margin={{
+                        ...isSmallScreen ? { top: 20 } : { top: 10 },
+                        ...isSmallScreen ? { bottom: 50 } : { bottom: 80 },
+                        ...isSmallScreen ? { right: 20 } : { right: 0 },
+                        ...isSmallScreen ? { left: 20 } : { left: 0 }
+                    }}
+                    innerRadius={0}
+                    padAngle={0.2}
+                    cornerRadius={2}
+                    activeOuterRadiusOffset={8}
+                    arcLinkLabelsSkipAngle={4}
+                    arcLinkLabelsTextColor={!darkMode ? "#333333" : '#ffffff'}
+                    arcLinkLabelsThickness={2}
+                    arcLinkLabelsColor={{ from: 'color' }}
+                    arcLabelsSkipAngle={2}
+                    arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+                    legends={isSmallScreen ? [] : [
+                        {
+                            anchor: 'bottom',
+                            direction: 'row',
+                            translateX: 0,
+                            translateY: 50,
+                            itemWidth: 70,
+                            itemHeight: 10,
+                            symbolShape: 'square',
+                            itemTextColor: !darkMode ? "#333333" : '#ffffff'
+                        }
+                    ]}
+                />
+            </> : <NothingToShow/>
             }
         </div>
     )

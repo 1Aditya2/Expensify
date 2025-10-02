@@ -14,12 +14,12 @@ const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, 
                     {onDeleteBudget && <Trash2 className='cursor-pointer' size={18} onClick={onDeleteBudget} />}
                 </div>
             </div>
-            <p className='text-slate-600 text-sm'>
+            <p className='text-slate-600 text-sm dark:text-white'>
             {moment(startDate).format('D MMM YYYY')} - {moment(endDate).format('D MMM YYYY')}
             </p>
             <div className='flex text-base justify-between items-center'>
                 <p>{USDFormat(amount)}</p>
-                <p className='bg-slate-300 px-3 rounded-md py-1'>{percent}%</p>
+                <p className='bg-slate-300 px-3 rounded-md py-1 dark:text-black'>{percent}%</p>
             </div>
             <LinearProgress
                 value={progress}
@@ -28,11 +28,11 @@ const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, 
                 barClassName={percent <= 0 ? 'bg-emerald-600' : 'bg-red-600'}
             />
             <div className='flex justify-between text-slate-500 '>
-                <div className='flex flex-col justify-start'>
+                <div className='flex flex-col justify-start dark:text-white'>
                     <p>{USDFormat(spent)}</p>
                     <p>Spent</p>
                 </div>
-                <div className='flex flex-col items-end'>
+                <div className='flex flex-col items-end dark:text-white'>
                     <p className={remains < 0 ? 'text-red-600' : ''}>{USDFormat(remains)}</p>
                     {remains >= 0 ? <p>Remains</p> : <p className='text-red-600'>Overspent</p>}
                 </div>

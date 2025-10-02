@@ -78,17 +78,17 @@ const Dashboard = () => {
         options={periodOptions}
         onChange={(e) => setPeriod(e.target.value)}
       />
-      <div className='flex items-center justify-between w-full flex-wrap gap-3 max-md:justify-center'>
+      <div className='flex items-center justify-between w-full flex-wrap gap-3'>
         {metrics?.map(({ label, value, perChange = 0, icon }, index) => {
           return (
-            <div key={`${value}-${index}`} className='flex flex-col items-start gap-2 shadow-lg px-6 py-2 rounded-xl max-md:w-full'>
+            <div key={`${value}-${index}`} className='flex flex-col items-start gap-2 shadow-lg dark:shadow-2xl px-6 py-2 rounded-xl max-md:w-full'>
               <div className='flex items-center gap-2'>
                 <p className='text-lg'>{capsFirst(label)}</p>
                 {icon && <div onClick={() => setOpenInitBalance(true)}>{icon}</div>}
               </div>
               <div className='flex flex-col gap-1'>
                 <p className='font-bold text-xl'>{USDFormat(value)}</p>
-                <p className='text-xs flex items-center gap-1 text-slate-500'>{!isEmpty(perChange)
+                <p className='text-xs flex items-center gap-1 text-slate-500 dark:text-white'>{!isEmpty(perChange)
                   ? perChange > 0
                     ? <><TrendingUp size={16} color='green' />{Math.abs(perChange)}% from previous {period === TODAY ? 'day' : period}</>
                     : <><TrendingDown size={16} color='red' />{Math.abs(perChange)}% from previous {period === TODAY ? 'day' : period}</>
@@ -99,16 +99,16 @@ const Dashboard = () => {
         })}
       </div>
       <div className='flex items-center justify-between w-full max-lg:flex-col'>
-        <div className='w-[49%] h-80 rounded-xl px-6 py-3 shadow-lg max-lg:w-full'>
+        <div className='w-[49%] h-80 rounded-xl p-3 shadow-lg max-lg:w-full dark:shadow-2xl'>
           <PieChart />
         </div>
-        <div className='w-[49%] h-80 rounded-xl px-6 py-3 shadow-lg max-lg:w-full'>
+        <div className='w-[49%] h-80 rounded-xl p-3 shadow-lg max-lg:w-full dark:shadow-2xl'>
           <BarChart />
         </div>
       </div>
       <div className='flex overflow-hidden flex-col items-start gap-2 w-full'>
         <p className='text-lg'>Recent Transactions</p>
-        <div className='overflow-auto h-[20vh] flex flex-col items-start gap-2 w-full'>
+        <div className='overflow-auto h-[22vh] flex flex-col items-start gap-2 w-full'>
           {!isEmpty(recentExpenses) ? recentExpenses?.map(({ name, category, amount, date, id }, index) => {
             return (
               <ExpenseCard

@@ -19,10 +19,11 @@ const Budget = () => {
           <Plus size={16} />
           <p className='text-base'>Add Budget</p>
         </Button>
-        <div className='grid grid-cols-2 gap-2 w-full overflow-auto h-[77vh]'>
+        <div className='grid grid-cols-2 max-md:grid-cols-1 gap-2 w-full overflow-auto h-[80vh]'>
           {budgets?.map(({ name, amount, period, startDate, endDate, id, category }, index) => {
             return (
-              <div key={`${name}-${index}`} className={`${budgets.length === 1 && 'col-span-2'} shadow-xl rounded-3xl p-4 h-fit`}>
+              <div key={`${name}-${index}`} className={`${budgets.length === 1 && 'col-span-2'} shadow-lg dark:shadow-2xl
+                rounded-3xl p-4 h-fit`}>
                 <SingleBudget
                   name={name}
                   amount={amount}

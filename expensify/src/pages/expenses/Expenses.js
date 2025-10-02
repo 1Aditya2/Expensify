@@ -53,7 +53,7 @@ const Expenses = () => {
   return (
     <div className='h-[93%] ml-6 mt-4 flex flex-col items-start gap-4'>
       <div className='flex justify-between items-center w-full flex-wrap gap-2'>
-        <div className='flex gap-4 items-center flex-wrap'>
+        <div className='flex gap-4 items-center flex-wrap max-md:w-full'>
           <Select
             name={'category'}
             placeholder="Select category"
@@ -77,7 +77,7 @@ const Expenses = () => {
             className='max-md:w-full'
             placeholder="search by amount or name"
           />
-          {showBulkDelete && <Button className='max-md:w-full' onClick={() => {
+          {showBulkDelete && <Button className='max-md:w-full max-md:justify-center max-md:flex' onClick={() => {
             dispatch(bulkDeleteExpenses(checked));
             setChecked({});
           }}>

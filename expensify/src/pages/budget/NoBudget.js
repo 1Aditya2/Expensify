@@ -7,7 +7,7 @@ const NoBudget = () => {
     const [createBudget, setCreateBudget] = useState(false);
     return (
         <div className='w-full h-full flex flex-col gap-2 items-center justify-center'>
-            <p className='text-slate-400'>No Budgets created till now!</p>
+            <p className='text-slate-400 dark:text-white'>No Budgets created till now!</p>
             <Button primary onClick={() => setCreateBudget(true)}>
                 <Plus size={16} />
                 <p className='text-base'>Add Budget</p>

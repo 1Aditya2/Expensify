@@ -1,14 +1,21 @@
 import { ResponsiveLine } from '@nivo/line'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment';
 import { getDaysArray, USDFormat } from '../../utils/helper';
 import { useSelector } from 'react-redux';
 import { getTickValues } from '../analytics/helper';
 
 const LineChart = ({ lineData }) => {
-    const expenses = useSelector(state => state.expenseReducer.expenses);
+    const { expenses, darkMode } = useSelector(state => state.expenseReducer);
     const { endDate } = lineData || {};
     const periodEnded = endDate === moment().format('YYYY-MM-DD');
+    const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const { axisBottom, lineChartData, avg, recommended } = useMemo(() => {
         const { amount, startDate, endDate, category, period } = lineData;
@@ -57,8 +64,9 @@ const LineChart = ({ lineData }) => {
                 axisBottom: {
                     format: '%b %d',
                     legend: 'Duration',
-                    legendOffset: 30,
-                    tickValues
+                    legendOffset: 45,
+                    tickValues,
+                    tickRotation: -45, tickPadding: 2
                 },
                 lineChartData: [
                     {
@@ -102,22 +110,56 @@ const LineChart = ({ lineData }) => {
                     data={lineChartData}
                     enableSlices="x"
                     enableTouchCrosshair
-                    legends={[
+                    theme={{
+                        text: {
+                            color: darkMode ? '#e5e7eb' : '#374151'
+                        },
+                        axis: {
+                            ticks: {
+                                text: {
+                                    fill: darkMode ? '#e5e7eb' : '#374151',
+                                    fontSize: isMobile ? 10 : 12
+                                }
+                            },
+                            legend: {
+                                text: {
+                                    fill: darkMode ? '#e5e7eb' : '#374151',
+                                    fontSize: isMobile ? 10 : 12
+                                }
+                            }
+                        },
+                        legends: {
+                            text: {
+                                fill: darkMode ? '#e5e7eb' : '#374151',
+                                fontSize: isMobile ? 10 : 12
+                            }
+                        },
+                        tooltip: {
+                            container: {
+                                background: darkMode ? '#111827' : '#ffffff',
+                                color: darkMode ? '#e5e7eb' : '#111827',
+                                borderRadius: 6,
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                            }
+                        }
+                    }}
+                    legends={isMobile ? [] : [
                         {
-                            anchor: 'right',
-                            direction: 'column',
-                            translateX: 90,
+                            anchor: 'bottom',
+                            direction: 'row',
+                            translateX: 0,
+                            translateY: 70,
                             itemWidth: 80,
-                            itemHeight: 42,
+                            itemHeight: 0,
                             symbolShape: 'square'
                         }
                     ]}
                     pointSize={5}
                     margin={{
-                        top: 20,
+                        top: 10,
                         left: 36,
-                        right: 88,
-                        bottom: 25
+                        right: 12,
+                        bottom: 55
                     }}
                     xFormat="time:%Y-%m-%d"
                     xScale={{

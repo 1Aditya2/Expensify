@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 import { Select } from '../../components/select/Select'
 import { barChartOptions, FOOD, RENT, TRAVEL, UTITLITIES } from '../../utils/constant'
@@ -7,8 +7,15 @@ import moment from 'moment'
 import NothingToShow from '../../components/NothingToShowInPeriod/NothingToShow'
 
 const BarChart = () => {
-    const expenses = useSelector(state => state.expenseReducer.expenses);
+    const { expenses, darkMode } = useSelector(state => state.expenseReducer);
     const [period, setPeriod] = useState('days');
+    const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const barData = useMemo(() => {
         const categories = [FOOD, RENT, UTITLITIES, TRAVEL];
@@ -31,7 +38,7 @@ const BarChart = () => {
 
     return (
         <div className='w-full h-full'>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between flex-wrap gap-2'>
                 <p className='text-lg'>Expenses</p>
                 <Select
                     name={'period'}
@@ -48,9 +55,42 @@ const BarChart = () => {
                 indexBy="duration"
                 labelSkipWidth={12}
                 labelSkipHeight={12}
-                axisBottom={{ legend: 'Duration', legendOffset: 42 }}
+                axisBottom={{ legend: 'Duration', legendOffset: 42, tickRotation: isMobile ? -45 : 0, tickPadding: isMobile ? 2 : 5 }}
                 axisLeft={{ legend: 'Amount', legendOffset: -50 }}
-                margin={{ top: 20, right: 120, bottom: 75, left: 60 }}
+                margin={{ top: 20, right: 10, bottom: isMobile ? 95 : 75, left: 60 }}
+                theme={{
+                    text: {
+                        color: darkMode ? '#e5e7eb' : '#374151'
+                    },
+                    axis: {
+                        ticks: {
+                            text: {
+                                fill: darkMode ? '#e5e7eb' : '#374151',
+                                fontSize: isMobile ? 10 : 12
+                            }
+                        },
+                        legend: {
+                            text: {
+                                fill: darkMode ? '#e5e7eb' : '#374151',
+                                fontSize: isMobile ? 10 : 12
+                            }
+                        }
+                    },
+                    legends: {
+                        text: {
+                            fill: darkMode ? '#e5e7eb' : '#374151',
+                            fontSize: isMobile ? 10 : 12,
+                        }
+                    },
+                    tooltip: {
+                        container: {
+                            background: darkMode ? '#111827' : '#ffffff',
+                            color: darkMode ? '#e5e7eb' : '#111827',
+                            borderRadius: 6,
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                        }
+                    }
+                }}
             /> :
             <NothingToShow/>
             }
