@@ -3,8 +3,10 @@ import { capsFirst, USDFormat } from '../../utils/helper'
 import { Edit, Trash2 } from 'lucide-react'
 import { LinearProgress } from '../ProgressBar/ProgressBar'
 import moment from 'moment'
+import { useSelector } from 'react-redux'
 
 const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, onEditBudget, spent, progress, remains, percent }) => {
+    const { baseCurrency } = useSelector(state => state.expenseReducer);
     return (
         <div className='gap-1 justify-start flex flex-col w-full'>
             <div className='flex justify-between w-full items-center'>
@@ -18,7 +20,7 @@ const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, 
             {moment(startDate).format('D MMM YYYY')} - {moment(endDate).format('D MMM YYYY')}
             </p>
             <div className='flex text-base justify-between items-center'>
-                <p>{USDFormat(amount)}</p>
+                <p>{USDFormat(amount, baseCurrency)}</p>
                 <p className='bg-slate-300 px-3 rounded-md py-1 dark:text-black'>{percent}%</p>
             </div>
             <LinearProgress
@@ -29,11 +31,11 @@ const BudgetCard = ({ name, amount, period, startDate, endDate, onDeleteBudget, 
             />
             <div className='flex justify-between text-slate-500 '>
                 <div className='flex flex-col justify-start dark:text-white'>
-                    <p>{USDFormat(spent)}</p>
+                    <p>{USDFormat(spent, baseCurrency)}</p>
                     <p>Spent</p>
                 </div>
                 <div className='flex flex-col items-end dark:text-white'>
-                    <p className={remains < 0 ? 'text-red-600' : ''}>{USDFormat(remains)}</p>
+                    <p className={remains < 0 ? 'text-red-600' : ''}>{USDFormat(remains, baseCurrency)}</p>
                     {remains >= 0 ? <p>Remains</p> : <p className='text-red-600'>Overspent</p>}
                 </div>
             </div>

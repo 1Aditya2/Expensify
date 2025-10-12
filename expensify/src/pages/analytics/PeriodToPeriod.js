@@ -9,7 +9,7 @@ import Tabs from '../../components/Tabs/Tabs';
 import { getTickValues, tabsArray } from './helper';
 const PeriodToPeriod = () => {
   const [period, setPeriod] = useState(WEEK);
-  const { expenses, initialBalance, darkMode } = useSelector(state => state.expenseReducer);
+  const { expenses, initialBalance, darkMode, baseCurrency } = useSelector(state => state.expenseReducer);
   const [tab, setTab] = useState(EXPENSES);
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
 
@@ -113,7 +113,7 @@ const PeriodToPeriod = () => {
           onChange={(e) => setPeriod(e.target.value)}
         />
       </div>
-      <p className='text-lg'>{USDFormat(lineChartData[tab].summary)}</p>
+      <p className='text-lg'>{USDFormat(lineChartData[tab].summary, baseCurrency)}</p>
       <Tabs
         tabsArray={tabsArray}
         currentTab={tab}

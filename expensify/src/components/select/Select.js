@@ -127,7 +127,7 @@ export function Select({
           aria-multiselectable="true"
           className="mt-1 max-h-64 overflow-auto border border-black rounded-xl bg-white shadow-lg p-2 z-50"
         >
-          <div className="flex items-center justify-between px-1 pb-2 gap-2">
+          <div className="flex items-center justify-between dark:text-black px-1 pb-2 gap-2">
             <button type="button" className="text-xs underline" onClick={selectAll}>
               Select all
             </button>
@@ -141,7 +141,7 @@ export function Select({
             return (
               <label
                 key={opt.value}
-                className={`flex items-center gap-2 px-2 py-1 rounded cursor-pointer ${opt.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'}`}
+                className={`flex items-center gap-2 px-2 py-1 dark:text-black rounded cursor-pointer ${opt.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'}`}
                 aria-selected={checked}
               >
                 <input

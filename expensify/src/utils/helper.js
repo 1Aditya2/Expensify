@@ -12,9 +12,25 @@ export function generateId() {
     return Math.floor(Math.random() * 9000) + 1000; // 1000–9999
 }
 
-export const USDFormat = (amount) => {
-    const formatUSD = new Intl.NumberFormat('en-US');
-    return amount >= 0 ? `$${formatUSD.format(amount)}` : `-$${formatUSD.format(-amount)}`
+export const USDFormat = (amount, currency = 'USD') => {
+    const currencySymbols = {
+        'USD': '$',
+        'EUR': '€',
+        'INR': '₹',
+        'GBP': '£'
+    };
+    const currencyLocales = {
+        'USD': 'en-US',
+        'EUR': 'de-DE',
+        'INR': 'en-IN',
+        'GBP': 'en-GB'
+    };
+
+    const symbol = currencySymbols[currency] || '$';
+    const locale = currencyLocales[currency] || 'en-US';
+    const formatter = new Intl.NumberFormat(locale);
+    
+    return amount >= 0 ? `${symbol}${formatter.format(amount)}` : `-${symbol}${formatter.format(-amount)}`
 }
 export const formatPercentageChange = (input) => {
     if (input === 'NaN' || input === 'Infinity' || input === '0.0' || input === '-Infinity') {

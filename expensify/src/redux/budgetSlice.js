@@ -30,8 +30,18 @@ const budgetSlice = createSlice({
             : { ...budg };
         })
         state.budgets = updatedBudget;
+      },
+      setCurrencyInBudget(state, action) {
+        const exchangeRate = action.payload;
+        const oldBudget = state.budgets;
+        state.budgets = oldBudget.map((each) => {
+          return {
+            ...each,
+            amount: (each.amount * exchangeRate)
+          }
+        })
       }
     }
   });
-  export const { addBudget, deleteBudget, editBudget } = budgetSlice.actions
+  export const { addBudget, deleteBudget, editBudget, setCurrencyInBudget } = budgetSlice.actions
   export default budgetSlice.reducer;

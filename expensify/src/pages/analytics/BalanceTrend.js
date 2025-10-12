@@ -8,7 +8,7 @@ import moment from 'moment';
 import { getTickValues } from './helper';
 const BalanceTrend = () => {
     const [period, setPeriod] = useState(WEEK);
-    const { expenses, initialBalance, darkMode } = useSelector((state) => state.expenseReducer);
+    const { expenses, initialBalance, darkMode, baseCurrency } = useSelector((state) => state.expenseReducer);
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
 
     useEffect(() => {
@@ -71,7 +71,7 @@ const BalanceTrend = () => {
                     onChange={(e) => setPeriod(e.target.value)}
                 />
             </div>
-            <p className='text-lg'>{USDFormat(balance)}</p>
+            <p className='text-lg'>{USDFormat(balance, baseCurrency)}</p>
             <div className='w-full h-64'>
                 <ResponsiveLine
                     animate

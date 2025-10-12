@@ -5,7 +5,7 @@ import { capsFirst, formatPercentageChange, USDFormat } from '../../utils/helper
 import { useDispatch, useSelector } from 'react-redux';
 import ExpenseCard from '../../components/expenseCard/ExpenseCard';
 import { isEmpty } from 'lodash';
-import { Edit, TrendingDown, TrendingUp } from 'lucide-react';
+import { Edit, Loader, TrendingDown, TrendingUp } from 'lucide-react';
 import PieChart from './PieChart';
 import { periodBasedCondition } from './helper';
 import BarChart from './BarChart';
@@ -16,9 +16,14 @@ import InitBalanceModal from './InitBalanceModal';
 import { setInitBalanceFlag } from '../../redux/expenseSlice';
 const Dashboard = () => {
   const [period, setPeriod] = useState(TODAY);
-  const { expenses, initialBalance, initBalanceFlag = true } = useSelector(state => state.expenseReducer);
+  const {
+    expenses,
+    initialBalance,
+    initBalanceFlag = true,
+    baseCurrency = 'USD',
+    currencyLoader = false
+  } = useSelector(state => state.expenseReducer);
   const dispatch = useDispatch();
-
   const recentExpenses = expenses.slice(0, 4)?.sort((a, b) => new Date(b.date) - new Date(a.date)) || [];
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -71,13 +76,13 @@ const Dashboard = () => {
 
   return (
     <div className='h-full overflow-auto ml-6 mt-4 flex flex-col items-start gap-4'>
-      <Select
-        name={'period'}
-        value={period}
-        placeholder={'Select a period'}
-        options={periodOptions}
-        onChange={(e) => setPeriod(e.target.value)}
-      />
+        <Select
+          name={'period'}
+          value={period}
+          placeholder={'Select a period'}
+          options={periodOptions}
+          onChange={(e) => setPeriod(e.target.value)}
+        />
       <div className='flex items-center justify-between w-full flex-wrap gap-3'>
         {metrics?.map(({ label, value, perChange = 0, icon }, index) => {
           return (
@@ -87,7 +92,7 @@ const Dashboard = () => {
                 {icon && <div onClick={() => setOpenInitBalance(true)}>{icon}</div>}
               </div>
               <div className='flex flex-col gap-1'>
-                <p className='font-bold text-xl'>{USDFormat(value)}</p>
+                {!currencyLoader ? <p className='font-bold text-xl'>{USDFormat(value, baseCurrency)}</p> : <Loader size={16} className="animate-spin" />}
                 <p className='text-xs flex items-center gap-1 text-slate-500 dark:text-white'>{!isEmpty(perChange)
                   ? perChange > 0
                     ? <><TrendingUp size={16} color='green' />{Math.abs(perChange)}% from previous {period === TODAY ? 'day' : period}</>

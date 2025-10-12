@@ -51,6 +51,13 @@ export const periodOptions = [
     { value: "quarter", label: "Quarter" },
     { value: 'year', label: 'Year' }
 ];
+export const currencyMap = [
+    { label: '$ - US Dollar', value: 'USD' },
+    { label: '€ - Euro', value: 'EUR' },
+    { label: '₹ - Indian Rupee', value: 'INR' },
+    { label: '£ - British Pound', value: 'GBP' }
+];
+
 export const barChartOptions = [
     { value: "days", label: "Last 5 days" },
     { value: "months", label: "Last 5 months" },

@@ -65,6 +65,36 @@ const PieChart = () => {
                     arcLinkLabelsColor={{ from: 'color' }}
                     arcLabelsSkipAngle={2}
                     arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+                    theme={{
+                        text: {
+                            color: darkMode ? '#e5e7eb' : '#374151'
+                        },
+                        axis: {
+                            ticks: {
+                                text: {
+                                    fill: darkMode ? '#e5e7eb' : '#374151'
+                                }
+                            },
+                            legend: {
+                                text: {
+                                    fill: darkMode ? '#e5e7eb' : '#374151'
+                                }
+                            }
+                        },
+                        legends: {
+                            text: {
+                                fill: darkMode ? '#e5e7eb' : '#374151'
+                            }
+                        },
+                        tooltip: {
+                            container: {
+                                background: darkMode ? '#111827' : '#ffffff',
+                                color: darkMode ? '#e5e7eb' : '#111827',
+                                borderRadius: 6,
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                            }
+                        }
+                    }}
                     legends={isSmallScreen ? [] : [
                         {
                             anchor: 'bottom',

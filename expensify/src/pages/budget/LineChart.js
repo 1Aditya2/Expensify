@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { getTickValues } from '../analytics/helper';
 
 const LineChart = ({ lineData }) => {
-    const { expenses, darkMode } = useSelector(state => state.expenseReducer);
+    const { expenses, darkMode, baseCurrency } = useSelector(state => state.expenseReducer);
     const { endDate } = lineData || {};
     const periodEnded = endDate === moment().format('YYYY-MM-DD');
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
@@ -175,11 +175,11 @@ const LineChart = ({ lineData }) => {
             </div>
             <div className='flex justify-between ml-5'>
                 <div className='flex text-base flex-col'>
-                    <p>{USDFormat(avg)}</p>
+                    <p>{USDFormat(avg, baseCurrency)}</p>
                     <p>Daily average</p>
                 </div>
                 {!periodEnded && <div className='flex text-base items-end flex-col'>
-                    <p>{USDFormat(recommended)}</p>
+                    <p>{USDFormat(recommended, baseCurrency)}</p>
                     <p>Daily recommended</p>
                 </div>}
             </div>
