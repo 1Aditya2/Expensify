@@ -5,9 +5,10 @@ import { barChartOptions, FOOD, RENT, TRAVEL, UTITLITIES } from '../../utils/con
 import { useSelector } from 'react-redux'
 import moment from 'moment'
 import NothingToShow from '../../components/NothingToShowInPeriod/NothingToShow'
+import CurrencyViewer from '../../components/CurrencyViewer/CurrencyViewer'
 
 const BarChart = () => {
-    const { expenses, darkMode } = useSelector(state => state.expenseReducer);
+    const { expenses, darkMode, baseCurrency, viewingCurrency, exchangeRate } = useSelector(state => state.expenseReducer);
     const [period, setPeriod] = useState('days');
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
 
@@ -31,8 +32,14 @@ const BarChart = () => {
             }
         }
         return previousDays
-            .map(d => ({ duration: d, value: totals.get(d) })).reverse();
-    }, [period, expenses]);
+            .map(d => {
+                const amtValue = CurrencyViewer({ amount: totals.get(d), withoutSymbol: true, baseCurrency, viewingCurrency, exchangeRate });
+                return {
+                    duration: d,
+                    value: amtValue
+                }
+            }).reverse();
+    }, [period, expenses, baseCurrency, viewingCurrency, exchangeRate]);
 
     const noData = barData.every(({ value }) => value === 0);
 

@@ -9,9 +9,9 @@ const budgetSlice = createSlice({
     reducers: {
       addBudget(state, action) {
         const id = generateId();
-        const { period, startDate, endDate } = action.payload;
+        const { period, startDate, endDate, amount } = action.payload;
         const { periodStartDate = startDate, periodEndDate = endDate } = getStartandEndDateBasedOnPeriod(period);
-        const data = { ...action.payload, id, startDate: periodStartDate, endDate: periodEndDate }
+        const data = { ...action.payload, id, startDate: periodStartDate, endDate: periodEndDate, amount: Number(amount) }
         state.budgets.unshift(data)
       },
       deleteBudget(state, action) {
@@ -26,22 +26,12 @@ const budgetSlice = createSlice({
         const { periodStartDate = startDate, periodEndDate = endDate } = getStartandEndDateBasedOnPeriod(period);
         const updatedBudget = state.budgets.map((budg) => {
           return budgetId === budg.id
-            ? { name, amount, id: budgetId, category, period, startDate: periodStartDate, endDate: periodEndDate }
+            ? { name, amount: Number(amount), id: budgetId, category, period, startDate: periodStartDate, endDate: periodEndDate }
             : { ...budg };
         })
         state.budgets = updatedBudget;
-      },
-      setCurrencyInBudget(state, action) {
-        const exchangeRate = action.payload;
-        const oldBudget = state.budgets;
-        state.budgets = oldBudget.map((each) => {
-          return {
-            ...each,
-            amount: (each.amount * exchangeRate)
-          }
-        })
       }
     }
   });
-  export const { addBudget, deleteBudget, editBudget, setCurrencyInBudget } = budgetSlice.actions
+  export const { addBudget, deleteBudget, editBudget } = budgetSlice.actions
   export default budgetSlice.reducer;

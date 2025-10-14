@@ -9,7 +9,7 @@ import { Input } from '../../components/input/Input';
 import { addBalanceValidation } from './helper';
 
 const InitBalanceModal = ({ open, onClose }) => {
-    const initialBalance = useSelector(state => state.expenseReducer.initialBalance);
+    const {initialBalance, baseCurrency} = useSelector(state => state.expenseReducer);
     const focusRef = React.useRef(null);
     const dispatch = useDispatch();
 
@@ -42,7 +42,7 @@ const InitBalanceModal = ({ open, onClose }) => {
                     }) => (
                         <form onSubmit={handleSubmit}>
                             <Input
-                                label={'Initial Balance'}
+                                label={`Initial Balance (${baseCurrency})`}
                                 name={'balance'}
                                 value={values.balance}
                                 onBlur={handleBlur}

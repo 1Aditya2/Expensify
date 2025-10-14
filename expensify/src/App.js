@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Sidebar from './components/sidebar/Sidebar';
-import { navItems } from './utils/constant';
+import { currencyMap, navItems } from './utils/constant';
 import { capsFirst } from './utils/helper';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCurrencyRate } from './redux/expenseSlice';
+import { Select } from './components/select/Select';
 const Expenses = React.lazy(() => import('./pages/expenses/Expenses'));
 const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'));
 const Budget = React.lazy(() => import('./pages/budget/Budget'));
@@ -12,16 +15,15 @@ const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 function App() {
   const { pathname = '' } = useLocation();
-  // const { baseCurrency = 'USD' } = useSelector(state => state.expenseReducer);
-  // const dispatch = useDispatch();
-  // const [currency, setCurrency] = useState(baseCurrency);
+  const { baseCurrency = 'INR', viewingCurrency = 'INR' } = useSelector(state => state.expenseReducer);
+  const dispatch = useDispatch();
+  const [currency, setCurrency] = useState(viewingCurrency);
 
-  // const handleCurrencyChange = (e) => {
-  //   const newCurrency = e.target.value;
-  //   setCurrency(newCurrency);
-  //   // dispatch(setCurrencyChanger(newCurrency));
-  //   dispatch(fetchCurrencyRate({ baseCurrency, newCurrency }));
-  // };
+  const handleCurrencyChange = (e) => {
+    const newCurrency = e.target.value;
+    setCurrency(newCurrency);
+    dispatch(fetchCurrencyRate({ baseCurrency, newCurrency }));
+  };
   return (
     <div className='h-[100vh] p-4 relative bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'>
       <Sidebar navItems={navItems}/> 
@@ -30,13 +32,13 @@ function App() {
         <p className='text-xl bg-slate-300 dark:bg-slate-700 inline p-2 rounded-lg'>
           {(capsFirst(pathname.slice(1) || 'Dashboard'))}
         </p>
-        {/* <Select
+        <Select
           name={'currency'}
           value={currency}
           placeholder={'Change currency'}
           options={currencyMap}
           onChange={handleCurrencyChange}
-        /> */}
+        />
         </div>
       <Routes>
         <Route path="/" element={<Dashboard/>} />

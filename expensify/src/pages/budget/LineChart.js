@@ -1,12 +1,13 @@
 import { ResponsiveLine } from '@nivo/line'
 import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment';
-import { getDaysArray, USDFormat } from '../../utils/helper';
+import { getDaysArray } from '../../utils/helper';
 import { useSelector } from 'react-redux';
 import { getTickValues } from '../analytics/helper';
+import CurrencyViewer from '../../components/CurrencyViewer/CurrencyViewer';
 
 const LineChart = ({ lineData }) => {
-    const { expenses, darkMode, baseCurrency } = useSelector(state => state.expenseReducer);
+    const { expenses, darkMode, baseCurrency, viewingCurrency, exchangeRate, currencyLoader = false } = useSelector(state => state.expenseReducer);
     const { endDate } = lineData || {};
     const periodEnded = endDate === moment().format('YYYY-MM-DD');
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
@@ -21,11 +22,11 @@ const LineChart = ({ lineData }) => {
         const { amount, startDate, endDate, category, period } = lineData;
             const days = moment().diff(moment(startDate), 'days') + 1;
             const datesArray = getDaysArray(startDate, endDate);
-            const recommended = (amount / (datesArray.length)).toFixed(0);
+            const recommended = Number((amount / (datesArray.length)).toFixed(0));
             const spent = expenses.filter(({ date, category: expenseCategory }) => (category.includes(expenseCategory))
                 && (moment(date).isSameOrAfter(startDate) && moment(date).isSameOrBefore(endDate)))
                 .reduce((acc, row) => acc + Number(row.amount), 0);
-            const avg = (spent / days).toFixed(0);
+            const avg = Number((spent / days).toFixed(0));
             let spentArray = [];
             let forecastArray = [];
             let overspentArray = [];
@@ -33,30 +34,33 @@ const LineChart = ({ lineData }) => {
             let count = 0;
             for (const each of datesArray) {
                 if (moment(each).isAfter(moment(), 'day')) break;
+                const currencySpent = CurrencyViewer({ amount: spent, baseCurrency, viewingCurrency, exchangeRate, withoutSymbol: true })
                 if (spent > amount) {
                     overspentArray.push({
                         x: each,
-                        y: spent
+                        y: currencySpent
                     });
                     continue;
                 }
                 spentArray.push({
                     x: each,
-                    y: spent
+                    y: currencySpent
                 })
             }
             for (const each of datesArray) {
                 if (moment(each).isBefore(moment(), 'day')) continue;
+                const currencyForecast = CurrencyViewer({ amount: (spent + (count * avg)), baseCurrency, viewingCurrency, exchangeRate, withoutSymbol: true })
                 forecastArray.push({
                     x: each,
-                    y: spent + (count * avg)
+                    y: currencyForecast
                 })
                 count++;
             }
             for (const each of datesArray) {
+                const currencyLimit = CurrencyViewer({ amount: amount, baseCurrency, viewingCurrency, exchangeRate, withoutSymbol: true })
                 limitArray.push({
                     x: each,
-                    y: Number(amount)
+                    y: currencyLimit
                 })
             }
             const tickValues = getTickValues(period, datesArray.length);
@@ -89,7 +93,7 @@ const LineChart = ({ lineData }) => {
                 avg,
                 recommended
             };
-    }, [lineData, expenses]);
+    }, [lineData, expenses, exchangeRate, baseCurrency, viewingCurrency]);
 
     return (
         <div className='w-full h-full flex flex-col'>
@@ -175,11 +179,11 @@ const LineChart = ({ lineData }) => {
             </div>
             <div className='flex justify-between ml-5'>
                 <div className='flex text-base flex-col'>
-                    <p>{USDFormat(avg, baseCurrency)}</p>
+                    <p><CurrencyViewer loader={currencyLoader} amount={avg} baseCurrency={baseCurrency} viewingCurrency={viewingCurrency} exchangeRate={exchangeRate}/></p>
                     <p>Daily average</p>
                 </div>
                 {!periodEnded && <div className='flex text-base items-end flex-col'>
-                    <p>{USDFormat(recommended, baseCurrency)}</p>
+                    <p><CurrencyViewer loader={currencyLoader} amount={recommended} baseCurrency={baseCurrency} viewingCurrency={viewingCurrency} exchangeRate={exchangeRate}/></p>
                     <p>Daily recommended</p>
                 </div>}
             </div>

@@ -7,12 +7,13 @@ import { Input } from '../../../components/input/Input';
 import { Select } from '../../../components/select/Select';
 import { DateSelector } from '../../../components/dateSelector/DateSelector';
 import { defaultDateFormat, expenseCategories } from '../../../utils/constant';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addExpense } from '../../../redux/expenseSlice';
 import { delay } from '../../../utils/helper';
 import moment from 'moment';
 
 const AddExpenseModal = ({ open, onClose }) => {
+  const { baseCurrency } = useSelector((state) => state.expenseReducer);
   const focusRef = React.useRef(null);
   const dispatch = useDispatch();
   const max = moment().format(defaultDateFormat);
@@ -57,7 +58,7 @@ const AddExpenseModal = ({ open, onClose }) => {
                 error={touched.name && errors.name}
               />
               <Input
-                label={'Amount'}
+                label={`Amount (${baseCurrency})`}
                 name={'amount'}
                 value={values.amount}
                 onBlur={handleBlur}

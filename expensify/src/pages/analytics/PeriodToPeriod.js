@@ -1,15 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Select } from '../../components/select/Select';
-import { capsFirst, getDaysArray, getStartandEndDateBasedOnPeriod, USDFormat } from '../../utils/helper';
+import { capsFirst, getDaysArray, getStartandEndDateBasedOnPeriod } from '../../utils/helper';
 import { CASH_FLOW, EXPENSES, INCOME, periodOptions, WEEK } from '../../utils/constant';
 import { ResponsiveLine } from '@nivo/line';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import Tabs from '../../components/Tabs/Tabs';
 import { getTickValues, tabsArray } from './helper';
+import CurrencyViewer from '../../components/CurrencyViewer/CurrencyViewer';
 const PeriodToPeriod = () => {
   const [period, setPeriod] = useState(WEEK);
-  const { expenses, initialBalance, darkMode, baseCurrency } = useSelector(state => state.expenseReducer);
+  const { expenses, initialBalance, darkMode, baseCurrency, viewingCurrency, exchangeRate, currencyLoader = false } = useSelector(state => state.expenseReducer);
   const [tab, setTab] = useState(EXPENSES);
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
 
@@ -45,15 +46,15 @@ const PeriodToPeriod = () => {
       }
       cashFlow.push({
         x: each,
-        y: cashflowTillDate
+        y: CurrencyViewer({ amount: cashflowTillDate, viewingCurrency, baseCurrency, exchangeRate, withoutSymbol: true })
       });
       income.push({
         x: each,
-        y: incomeTillDate
+        y: CurrencyViewer({ amount: incomeTillDate, viewingCurrency, baseCurrency, exchangeRate, withoutSymbol: true })
       });
       expense.push({
         x: each,
-        y: expenseTillDate
+        y: CurrencyViewer({ amount: expenseTillDate, viewingCurrency, baseCurrency, exchangeRate, withoutSymbol: true })
       })
     };
     const sortedCashFlow = cashFlow.toSorted((a, b) => a.y - b.y);
@@ -87,8 +88,8 @@ const PeriodToPeriod = () => {
               id: 'Expenses'
             }
           ],
-          min: expense[expense.length - 1].y,
-          max: expense[0].y,
+          max: expense[expense.length - 1].y,
+          min: expense[0].y,
           summary: expense[expense.length - 1].y
         }
       },
@@ -99,7 +100,7 @@ const PeriodToPeriod = () => {
         tickValues
       }
     }
-  }, [expenses, period, initialBalance]);
+  }, [expenses, period, initialBalance, viewingCurrency, baseCurrency, exchangeRate]);
 
   return (
     <div className='shadow-lg dark:shadow-2xl flex-1 rounded-3xl p-3 flex flex-col gap-1 items-start'>
@@ -113,7 +114,12 @@ const PeriodToPeriod = () => {
           onChange={(e) => setPeriod(e.target.value)}
         />
       </div>
-      <p className='text-lg'>{USDFormat(lineChartData[tab].summary, baseCurrency)}</p>
+      <p className='text-lg'><CurrencyViewer
+        amount={lineChartData[tab].summary}
+        viewingCurrency={viewingCurrency}
+        baseCurrency={viewingCurrency}
+        loader={currencyLoader}
+      /></p>
       <Tabs
         tabsArray={tabsArray}
         currentTab={tab}

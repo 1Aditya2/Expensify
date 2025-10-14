@@ -1,13 +1,19 @@
 import { MoveDownLeft, MoveUpRight, Pencil, Trash } from 'lucide-react'
 import React from 'react'
-import { capsFirst, USDFormat } from '../../utils/helper'
+import { capsFirst } from '../../utils/helper'
 import { INCOME } from '../../utils/constant'
 import { Checkbox } from '../CheckBox/CheckBox'
 import Tooltip from '../Tooltip/Tooltip'
 import { useSelector } from 'react-redux'
+import CurrencyViewer from '../CurrencyViewer/CurrencyViewer'
 
 const ExpenseCard = ({ name, amount, category, date, index, onEditClick, onDeleteClick, id, checked, onChecked }) => {
-    const { baseCurrency } = useSelector(state => state.expenseReducer);
+    const {
+        baseCurrency = 'INR',
+        viewingCurrency = 'INR',
+        exchangeRate = 1,
+        currencyLoader = false
+    } = useSelector(state => state.expenseReducer);
     return (
         <div className='p-2 w-full flex justify-between items-center max-sm:flex-col max-sm:items-start rounded-xl shadow-lg dark:shadow-2xl' key={`${index}-${amount}`}>
             <div className='flex flex-col gap-3'>
@@ -25,7 +31,13 @@ const ExpenseCard = ({ name, amount, category, date, index, onEditClick, onDelet
                             </span></Tooltip>}&nbsp;·&nbsp;{category === INCOME
                                 ? <MoveDownLeft size={16} color='green' />
                                 : <MoveUpRight size={16} color='red' />}
-                        <span>{USDFormat(amount, baseCurrency)}</span>
+                        <CurrencyViewer
+                            amount={amount}
+                            baseCurrency={baseCurrency}
+                            viewingCurrency={viewingCurrency}
+                            exchangeRate={exchangeRate}
+                            loader={currencyLoader}
+                        />
                     </p>
                 </div>
                 <p className='text-sm'>{capsFirst(category)} · {date}</p>

@@ -12,7 +12,10 @@ export function generateId() {
     return Math.floor(Math.random() * 9000) + 1000; // 1000–9999
 }
 
-export const USDFormat = (amount, currency = 'USD') => {
+export const USDFormat = (amount = 0, currency = 'INR', withoutSymbol = false) => {
+    if (withoutSymbol) {
+        return Number(amount?.toFixed(2));
+    }
     const currencySymbols = {
         'USD': '$',
         'EUR': '€',
@@ -26,10 +29,9 @@ export const USDFormat = (amount, currency = 'USD') => {
         'GBP': 'en-GB'
     };
 
-    const symbol = currencySymbols[currency] || '$';
-    const locale = currencyLocales[currency] || 'en-US';
+    const symbol = currencySymbols[currency] || '₹';
+    const locale = currencyLocales[currency] || 'en-IN';
     const formatter = new Intl.NumberFormat(locale);
-    
     return amount >= 0 ? `${symbol}${formatter.format(amount)}` : `-${symbol}${formatter.format(-amount)}`
 }
 export const formatPercentageChange = (input) => {

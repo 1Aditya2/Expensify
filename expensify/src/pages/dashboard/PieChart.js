@@ -6,9 +6,10 @@ import { useSelector } from 'react-redux';
 import { Select } from '../../components/select/Select';
 import { chartPeriodCondition } from './helper';
 import NothingToShow from '../../components/NothingToShowInPeriod/NothingToShow';
+import CurrencyViewer from '../../components/CurrencyViewer/CurrencyViewer';
 
 const PieChart = () => {
-    const { expenses, darkMode } = useSelector(state => state.expenseReducer);
+    const { expenses, darkMode, baseCurrency = 'INR', viewingCurrency = 'INR', exchangeRate = 1 } = useSelector(state => state.expenseReducer);
     const [period, setPeriod] = useState(TODAY);
     const [isSmallScreen, setIsSmallScreen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
 
@@ -23,17 +24,16 @@ const PieChart = () => {
         return categoryArray.map(({ each, color }) => {
             const value = expenses.filter(({ category, date }) => category === each
                 && chartPeriodCondition(period, date)).reduce((acc, row) => Number(row.amount) + acc, 0);
+            const amtValue = CurrencyViewer({ amount: value, baseCurrency, viewingCurrency, exchangeRate, withoutSymbol: true })
             return {
                 id: each,
                 label: capsFirst(each),
-                value,
+                value: amtValue,
                 color
             }
         })
-    }, [period, expenses]);
-
+    }, [period, expenses, baseCurrency, viewingCurrency, exchangeRate]);
     const noData = pieData.every(({ value }) => value === 0);
-
     return (
         <div className='w-full h-full'>
             <div className='flex items-center justify-between flex-wrap gap-2'>
@@ -50,7 +50,7 @@ const PieChart = () => {
                 <ResponsivePie
                     data={pieData}
                     margin={{
-                        ...isSmallScreen ? { top: 20 } : { top: 10 },
+                        ...isSmallScreen ? { top: 20 } : { top: 30 },
                         ...isSmallScreen ? { bottom: 50 } : { bottom: 80 },
                         ...isSmallScreen ? { right: 20 } : { right: 0 },
                         ...isSmallScreen ? { left: 20 } : { left: 0 }
@@ -108,7 +108,7 @@ const PieChart = () => {
                         }
                     ]}
                 />
-            </> : <NothingToShow/>
+            </> : <NothingToShow />
             }
         </div>
     )

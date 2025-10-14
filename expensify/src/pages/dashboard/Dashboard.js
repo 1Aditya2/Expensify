@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import { Select } from '../../components/select/Select'
 import { INCOME, periodOptions, TODAY } from '../../utils/constant';
-import { capsFirst, formatPercentageChange, USDFormat } from '../../utils/helper';
+import { capsFirst, formatPercentageChange } from '../../utils/helper';
 import { useDispatch, useSelector } from 'react-redux';
 import ExpenseCard from '../../components/expenseCard/ExpenseCard';
 import { isEmpty } from 'lodash';
-import { Edit, Loader, TrendingDown, TrendingUp } from 'lucide-react';
+import { Edit, TrendingDown, TrendingUp } from 'lucide-react';
 import PieChart from './PieChart';
 import { periodBasedCondition } from './helper';
 import BarChart from './BarChart';
@@ -14,14 +14,17 @@ import EditExpenseModal from '../expenses/Modals/EditExpenseModal';
 import NoExpenses from '../expenses/NoExpenses';
 import InitBalanceModal from './InitBalanceModal';
 import { setInitBalanceFlag } from '../../redux/expenseSlice';
+import CurrencyViewer from '../../components/CurrencyViewer/CurrencyViewer';
 const Dashboard = () => {
   const [period, setPeriod] = useState(TODAY);
   const {
     expenses,
     initialBalance,
     initBalanceFlag = true,
-    baseCurrency = 'USD',
-    currencyLoader = false
+    baseCurrency = 'INR',
+    currencyLoader = false,
+    viewingCurrency = 'INR',
+    exchangeRate = 1
   } = useSelector(state => state.expenseReducer);
   const dispatch = useDispatch();
   const recentExpenses = expenses.slice(0, 4)?.sort((a, b) => new Date(b.date) - new Date(a.date)) || [];
@@ -92,7 +95,13 @@ const Dashboard = () => {
                 {icon && <div onClick={() => setOpenInitBalance(true)}>{icon}</div>}
               </div>
               <div className='flex flex-col gap-1'>
-                {!currencyLoader ? <p className='font-bold text-xl'>{USDFormat(value, baseCurrency)}</p> : <Loader size={16} className="animate-spin" />}
+                  <p className='font-bold text-xl'><CurrencyViewer
+                    amount={value}
+                    loader={currencyLoader}
+                    exchangeRate={exchangeRate}
+                    viewingCurrency={viewingCurrency}
+                    baseCurrency={baseCurrency}/>
+                  </p>
                 <p className='text-xs flex items-center gap-1 text-slate-500 dark:text-white'>{!isEmpty(perChange)
                   ? perChange > 0
                     ? <><TrendingUp size={16} color='green' />{Math.abs(perChange)}% from previous {period === TODAY ? 'day' : period}</>
@@ -113,7 +122,7 @@ const Dashboard = () => {
       </div>
       <div className='flex overflow-hidden flex-col items-start gap-2 w-full'>
         <p className='text-lg'>Recent Transactions</p>
-        <div className='overflow-auto h-[22vh] flex flex-col items-start gap-2 w-full'>
+        <div className='overflow-auto h-[20vh] flex flex-col items-start gap-2 w-full'>
           {!isEmpty(recentExpenses) ? recentExpenses?.map(({ name, category, amount, date, id }, index) => {
             return (
               <ExpenseCard

@@ -1,14 +1,15 @@
 import { ResponsiveLine } from '@nivo/line';
 import React, { useEffect, useMemo, useState } from 'react';
-import { capsFirst, getDaysArray, getStartandEndDateBasedOnPeriod, USDFormat } from '../../utils/helper';
+import { capsFirst, getDaysArray, getStartandEndDateBasedOnPeriod } from '../../utils/helper';
 import { Select } from '../../components/select/Select';
 import { INCOME, periodOptions, WEEK } from '../../utils/constant';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { getTickValues } from './helper';
+import CurrencyViewer from '../../components/CurrencyViewer/CurrencyViewer';
 const BalanceTrend = () => {
     const [period, setPeriod] = useState(WEEK);
-    const { expenses, initialBalance, darkMode, baseCurrency } = useSelector((state) => state.expenseReducer);
+    const { expenses, initialBalance, darkMode, baseCurrency, viewingCurrency, exchangeRate, currencyLoader = false } = useSelector((state) => state.expenseReducer);
     const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
 
     useEffect(() => {
@@ -35,9 +36,10 @@ const BalanceTrend = () => {
                 }
                 balanceTillDate = balanceTillDate - Number(amount);
             }
+            const currencyBalance = CurrencyViewer({ withoutSymbol: true, amount: balanceTillDate, baseCurrency, viewingCurrency, exchangeRate });
             balanceTrend.push({
                 x: each,
-                y: balanceTillDate
+                y: currencyBalance
             });
         };
         const sortedBalances = balanceTrend.toSorted((a, b) => a.y - b.y);
@@ -57,7 +59,7 @@ const BalanceTrend = () => {
             min: sortedBalances[0].y,
             max: sortedBalances[sortedBalances.length - 1].y
         };
-    }, [period, expenses, initialBalance]);
+    }, [period, expenses, initialBalance, baseCurrency, viewingCurrency, exchangeRate]);
 
     return (
         <div className='shadow-lg dark:shadow-2xl flex-1 rounded-3xl p-3 flex flex-col gap-1 items-start'>
@@ -71,7 +73,7 @@ const BalanceTrend = () => {
                     onChange={(e) => setPeriod(e.target.value)}
                 />
             </div>
-            <p className='text-lg'>{USDFormat(balance, baseCurrency)}</p>
+            <p className='text-lg'><CurrencyViewer loader={currencyLoader} baseCurrency={viewingCurrency} viewingCurrency={viewingCurrency} amount={balance}/></p>
             <div className='w-full h-64'>
                 <ResponsiveLine
                     animate
